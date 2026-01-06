@@ -2,10 +2,10 @@
 
 This document must be updated daily every time you finish a work session.
 
-## Vincent Chen 
+## Vincent Chen
 
-### 2024-01-02 - Brief description
-Expanded description including how much time was spent on task.
+### 2024-01-02 - starting project
+Updated PROPOSAL/README.md,
 
 ### 2024-01-03 - Brief description
 Expanded description including how much time was spent on task.
