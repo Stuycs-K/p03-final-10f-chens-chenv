@@ -39,5 +39,7 @@ During gameplay, users will interact through a terminal-based interface that dis
 
 # Intended pacing:
 Thursday: complete matching with pools and room
-Friday: complete MVP (leaderboard, matching; no streak)
-Tuesday: add extra features and test (streak, username): around 1 per day
+Friday: complete leaderboard, matching; no streak
+Monday: implement tic-tac-toe, complete MVP
+Tuesday: complete user interface
+Wednesday: add extra features and test
