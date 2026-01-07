@@ -1,20 +1,6 @@
 #include "networking.h"
 int listen_socket;
-char * rot13(char*s) {
-  int i = 0;
-  while(s[i]) {
-    unsigned char c = s[i]; //overflowed previously bc z too close to 127
-      if (c>=65 && c<=90) {
-          c = ((c-65+13)%26) + 'A';
-      }
-      else if (c>=97 && c<=122) {
-          c = ((c-97+13)%26) + 'a';
-      }
-      s[i] = c;
-      i++;
-  }
-  return s;
-}
+
 static void sighandler(int signo) {
     if ( signo == SIGINT ) {
       close(listen_socket);
@@ -23,7 +9,7 @@ static void sighandler(int signo) {
   }
 void subserver_logic(int client_socket){
   char buffer[BUFFER_SIZE];
-
+// subserver should be reading for a username first, then the leaderboard ranking (array?)
 while(1) {
     int k = recv(client_socket, buffer, sizeof(buffer)-1, 0); //recv or read??
     if(k < 0) {
