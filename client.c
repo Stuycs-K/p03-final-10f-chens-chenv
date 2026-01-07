@@ -47,6 +47,14 @@ int main(int argc, char *argv[] ) {
   if(argc>1){
     IP=argv[1];
   }
+
+  for(int i = 0; i < 0; i++) {//fix printing grid, get correct Xs and Os
+    printf("  %s  |  %s  |  %s  \n", "-1", "-1", "-1"); //complete
+    printf("=====*=====*=====\n");
+      printf("  %s  |  %s  |  %s  \n","-1", "-1", "-1"); //complete
+printf("=====*=====*=====\n");
+        printf("  %s  |  %s  |  %s  \n","-1", "-1", "-1"); //complete
+  }
   int server_socket = client_tcp_handshake(IP);
   printf("client connected.\n");
 
