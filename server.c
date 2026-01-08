@@ -47,7 +47,7 @@ int main(int argc, char *argv[] ) {
 
       exit(0);
   }
-
+  //always listen for disconnecting clients?
   else {
     // parent
     close(client_socket);

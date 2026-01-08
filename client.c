@@ -3,6 +3,7 @@
 
 static void sighandler(int signo) {
     if ( signo == SIGINT ) {
+      //send smth to server so it knows this clinet has disconnecrted. 
       close(listen_socket);
       exit(0);
     }
