@@ -22,8 +22,8 @@ while(1) {
       break;
     }
     else { //
-      buffer[k] = '\0';
-      rot13(buffer);
+      buffer[k-1] = '\0';
+      printf("Player %s has joined.\n", buffer);
     }
 
    int n = send(client_socket, buffer, strlen(buffer), 0); //send or write??
