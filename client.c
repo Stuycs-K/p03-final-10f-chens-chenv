@@ -1,5 +1,13 @@
 #include "networking.h"
 
+
+static void sighandler(int signo) {
+    if ( signo == SIGINT ) {
+      close(listen_socket);
+      exit(0);
+    }
+  }
+
 void clientLogic(int server_socket){
   while(1) {
   printf("enter a string: ");
@@ -43,9 +51,18 @@ printf("received: %s", buffer);
 }
 
 int main(int argc, char *argv[] ) {
+  signal(SIGINT, sighandler);
   char* IP = "127.0.0.1";
   if(argc>1){
     IP=argv[1];
+  }
+
+  for(int i = 0; i < 0; i++) {//fix printing grid, get correct Xs and Os
+    printf("  %s  |  %s  |  %s  \n", "-1", "-1", "-1"); //complete
+    printf("=====*=====*=====\n");
+      printf("  %s  |  %s  |  %s  \n","-1", "-1", "-1"); //complete
+printf("=====*=====*=====\n");
+        printf("  %s  |  %s  |  %s  \n","-1", "-1", "-1"); //complete
   }
   int server_socket = client_tcp_handshake(IP);
   printf("client connected.\n");
