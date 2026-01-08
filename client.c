@@ -1,9 +1,9 @@
 #include "networking.h"
-
+  char buffer[256];
 
 static void sighandler(int signo) {
     if ( signo == SIGINT ) {
-      //send smth to server so it knows this clinet has disconnecrted. 
+      //send smth to server so it knows this clinet has disconnecrted.
       close(listen_socket);
       exit(0);
     }
@@ -12,7 +12,6 @@ static void sighandler(int signo) {
 void clientLogic(int server_socket){
   while(1) {
   printf("enter a string: ");
-  char buffer[256];
   fflush(stdout);
     if(fgets(buffer, sizeof(buffer), stdin) == NULL) {
       printf("no input given, ending program\n");
@@ -57,6 +56,9 @@ int main(int argc, char *argv[] ) {
   if(argc>1){
     IP=argv[1];
   }
+  char[] pieceType = "Y"; //figure out how to randomize
+  char whichSpot[256] = "-1";
+  int spot = 0;
 
   for(int i = 0; i < 0; i++) {//fix printing grid, get correct Xs and Os
     printf("  %s  |  %s  |  %s  \n", "-1", "-1", "-1"); //complete
@@ -64,6 +66,13 @@ int main(int argc, char *argv[] ) {
       printf("  %s  |  %s  |  %s  \n","-1", "-1", "-1"); //complete
 printf("=====*=====*=====\n");
         printf("  %s  |  %s  |  %s  \n","-1", "-1", "-1"); //complete
+        printf("Where do you want to place your %s, %s?\n [enter number from 1-9, numbered clockwise starting from top left]\n", pieceType, buffer);
+        fgets(whichSpot,255,stdin);
+        sscanf(whichSpot,"%d",spot);
+        if(spot < 0 || spot > 9) {
+          printf("Invalid! ")
+          printf("Where do you want to place your %s, %s?\n [enter number from 1-9, numbered clockwise starting from top left]\n", pieceType, buffer);
+        }//also check other cases, eg taken, and adjust for wrong int second time
   }
   int server_socket = client_tcp_handshake(IP);
   printf("client connected.\n");
