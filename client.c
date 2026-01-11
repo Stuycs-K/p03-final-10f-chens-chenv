@@ -1,6 +1,22 @@
 #include "networking.h"
   char buffer[256];
 
+/*
+
+$ Enter username:
+Xxxxxx
+Thank you. Entering pool…
+Entered pool. Waiting for a match… 
+Entering match with abcde…
+
+*/
+
+/*
+Opponent has placed their ejffjbge. Where do you want to place your ewhbwbgb? [enter number from 1 to 9]
+2
+Invalid! Where do you want to place your ewhbwbgb?
+3
+*/
 static void sighandler(int signo) {
     if ( signo == SIGINT ) {
       //send smth to server so it knows this clinet has disconnecrted.
@@ -8,6 +24,55 @@ static void sighandler(int signo) {
       exit(0);
     }
   }
+
+  void printtheboard() {
+  printf("  %s  |  %s  |  %s  \n", board[0], board[1], board[2]); //complete
+    printf("=====*=====*=====\n");
+      printf("  %s  |  %s  |  %s  \n",board[3],board[4],board[5]); //complete
+printf("=====*=====*=====\n");
+        printf("  %s  |  %s  |  %s  \n",board[6],board[7],board[8]); //complete
+
+}
+
+void prompt() {
+  
+  for(int i = 0; i < 0; i++) {//fix printing grid, get correct Xs and Os
+            printf("Where do you want to place your %s, %s?\n [enter number from 1-9, numbered clockwise starting from top left]\n", pieceType, buffer);
+        fgets(whichSpot,255,stdin);
+        sscanf(whichSpot,"%d",&spot);
+        if(spot < 0 || spot > 9) {
+          printf("Invalid! ");
+          printf("Where do you want to place your %s, %s?\n [enter number from 1-9, numbered clockwise starting from top left]\n", pieceType, buffer);
+        }//also check other cases, eg taken, and adjust for wrong int second time
+  }
+}
+
+  void readinput(char *msg) {
+  if(!strncmp(msg, "THANKS", 6)) {
+    printf("Thank you. Entering pool...\n");
+  }
+  else if(!strncmp(msg, "POOL_WAIT", 9)) {
+    printf("Entered pool. Waiting for a match...\n");
+  }
+  else if(!strncmp(msg, "MATCH", 5)) {
+    char opponent[64], piece;
+    sscanf(msg, "MATCH %s %c", opponent, &piece);
+    printf("Entering match with %s...\n", opponent);
+  }
+  else if(!strncmp(msg, "YOUR_TURN", 9)) {
+    printtheboard();
+    prompt();
+  }
+  else if(!strncmp(msg, "INVALID", 7)) {
+    printf("Invalid! Try again.\n");
+  }
+  else if(!strncmp(msg, "WIN", 3)) {
+    printf("You win!\nSending back to pool...\n");
+  }
+  else {
+    printf("You lost, sending back to pool...")
+  }
+}
 
 void clientLogic(int server_socket){
   printf("Please enter a username: ");
@@ -18,33 +83,12 @@ void clientLogic(int server_socket){
       return;
   }
   while(1) {
-  /*
-  Send the user input to the client. ??? not server??
-  */
-int len, bytes_sent;
-len = strlen(buffer);
-bytes_sent = send(server_socket, buffer, len, 0);
-if(bytes_sent < 0) {
-  err(-1, "error sending"); //check err
-}
-else {
-  bytes_sent =  recv(server_socket, buffer, sizeof(buffer)-1, 0);
-}
-if(bytes_sent < 0) {
-  err(-1, "error receiving"); //check err
-}
-if(bytes_sent == 0) {
-  exit(0); //scok
-}
-buffer[bytes_sent] = '\0';
-  /*
-Read the modified string from the server
-*/
-
-
-/*prints the modified string
-*/
-printf("received: %s", buffer);
+  int k = recv(server_socket, buffer, sizeof(buffer)-1, 0);
+  if(k <= 0) {
+    exit(0);
+  }
+  buffer[k] = '\0';
+  readinput(buffer);
 
 }
 }
@@ -59,20 +103,6 @@ int main(int argc, char *argv[] ) {
   char whichSpot[256] = "-1";
   int spot = 0;
 
-  for(int i = 0; i < 0; i++) {//fix printing grid, get correct Xs and Os
-    printf("  %s  |  %s  |  %s  \n", "-1", "-1", "-1"); //complete
-    printf("=====*=====*=====\n");
-      printf("  %s  |  %s  |  %s  \n","-1", "-1", "-1"); //complete
-printf("=====*=====*=====\n");
-        printf("  %s  |  %s  |  %s  \n","-1", "-1", "-1"); //complete
-        printf("Where do you want to place your %s, %s?\n [enter number from 1-9, numbered clockwise starting from top left]\n", pieceType, buffer);
-        fgets(whichSpot,255,stdin);
-        sscanf(whichSpot,"%d",&spot);
-        if(spot < 0 || spot > 9) {
-          printf("Invalid! ");
-          printf("Where do you want to place your %s, %s?\n [enter number from 1-9, numbered clockwise starting from top left]\n", pieceType, buffer);
-        }//also check other cases, eg taken, and adjust for wrong int second time
-  }
   int server_socket = client_tcp_handshake(IP);
   printf("Welcome to TTT!\n");
 
