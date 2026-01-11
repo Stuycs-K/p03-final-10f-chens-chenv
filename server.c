@@ -9,6 +9,16 @@ static void sighandler(int signo) {
   }
 void subserver_logic(int client_socket){
   char buffer[BUFFER_SIZE];
+  char username[BUFFER_SIZE];
+
+  int k = recv(client_socket, username, sizeof(username) - 1, 0);
+  if(k <= 0) {
+    close(client_socket);
+    return;
+  }
+
+  username[k - 1] = '\0';
+  printf("Player %s has joined.\n", username);
 // subserver should be reading for a username first, then the leaderboard ranking (array?)
 while(1) {
     int k = recv(client_socket, buffer, sizeof(buffer)-1, 0); //recv or read??
@@ -17,13 +27,10 @@ while(1) {
         err(k, "issue receiving");
     }
     if(k==0) {
+      printf("%s has left.\n", username);
       close(client_socket);
       exit(0);
       break;
-    }
-    else { //
-      buffer[k-1] = '\0';
-      printf("Player %s has joined.\n", buffer);
     }
 
    int n = send(client_socket, buffer, strlen(buffer), 0); //send or write??

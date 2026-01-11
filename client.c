@@ -10,15 +10,14 @@ static void sighandler(int signo) {
   }
 
 void clientLogic(int server_socket){
-  while(1) {
-  printf("enter a string: ");
+  printf("Please enter a username: ");
   fflush(stdout);
     if(fgets(buffer, sizeof(buffer), stdin) == NULL) {
       printf("no input given, ending program\n");
       exit(0);
       return;
   }
-
+  while(1) {
   /*
   Send the user input to the client. ??? not server??
   */
@@ -75,7 +74,7 @@ printf("=====*=====*=====\n");
         }//also check other cases, eg taken, and adjust for wrong int second time
   }
   int server_socket = client_tcp_handshake(IP);
-  printf("client connected.\n");
+  printf("Welcome to TTT!\n");
 
   clientLogic(server_socket);
   close(server_socket);
