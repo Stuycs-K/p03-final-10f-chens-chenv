@@ -1,5 +1,8 @@
 #include "networking.h"
-  char buffer[256];
+  char buffer[256]; //username
+  char board[10]; //space, X, or O.
+  char pieceType; //X, or O,
+  int server_socket;
 
 /*
 
@@ -26,25 +29,46 @@ static void sighandler(int signo) {
   }
 
   void printtheboard() {
-  printf("  %s  |  %s  |  %s  \n", board[0], board[1], board[2]); //complete
+  printf("  %c  |  %c  |  %c  \n", board[1], board[2], board[3]); //complete
     printf("=====*=====*=====\n");
-      printf("  %s  |  %s  |  %s  \n",board[3],board[4],board[5]); //complete
+      printf("  %c  |  %c  |  %c  \n",board[4],board[5],board[6]); //complete
 printf("=====*=====*=====\n");
-        printf("  %s  |  %s  |  %s  \n",board[6],board[7],board[8]); //complete
+        printf("  %c  |  %c  |  %c  \n",board[7],board[8], board[9]); //complete
 
 }
 
 void prompt() {
-  
-  for(int i = 0; i < 0; i++) {//fix printing grid, get correct Xs and Os
-            printf("Where do you want to place your %s, %s?\n [enter number from 1-9, numbered clockwise starting from top left]\n", pieceType, buffer);
-        fgets(whichSpot,255,stdin);
-        sscanf(whichSpot,"%d",&spot);
-        if(spot < 0 || spot > 9) {
-          printf("Invalid! ");
-          printf("Where do you want to place your %s, %s?\n [enter number from 1-9, numbered clockwise starting from top left]\n", pieceType, buffer);
+  char whichSpot[256];
+  int spot;
+  while(1) {//keeps prompting until right
+            printf("Where do you want to place your %c, %s?\n", pieceType, buffer);
+            printf("[enter number from 1-9, numbered clockwise starting from top left]\n");
+        if(!fgets(whichSpot,255,stdin)) {
+          continue;
+        }
+        int k = sscanf(whichSpot,"%d",&spot);
+        if(k != 1) {
+          printf("Invalid! Please enter a number.\n");
+          continue;
+        }
+        if(spot < 1 || spot > 9) {
+          printf("Invalid! number should be from 1-9");
+          continue;
+        //   printf("Where do you want to place your %s, %s?\n", pieceType, buffer);
+        //   printf("[enter number from 1-9, numbered clockwise starting from top left]\n");
+        // 
+        if (board[spot] != ' ') {
+      printf("Invalid! Spot already taken.\n");
+      continue;
+    }
+
+        break; //worked
         }//also check other cases, eg taken, and adjust for wrong int second time
   }
+  board[spot] = pieceType;
+  char msg[64];
+  sprintf(msg, "MOVE %d\n", spot);
+  send(server_socket, msg, strlen(msg), 0);
 }
 
   void readinput(char *msg) {
@@ -58,6 +82,9 @@ void prompt() {
     char opponent[64], piece;
     sscanf(msg, "MATCH %s %c", opponent, &piece);
     printf("Entering match with %s...\n", opponent);
+    for (int i = 1; i <= 9; i++) {
+      board[i] = ' ';
+    }
   }
   else if(!strncmp(msg, "YOUR_TURN", 9)) {
     printtheboard();
@@ -70,7 +97,7 @@ void prompt() {
     printf("You win!\nSending back to pool...\n");
   }
   else {
-    printf("You lost, sending back to pool...")
+    printf("You lost, sending back to pool...");
   }
 }
 
@@ -82,6 +109,7 @@ void clientLogic(int server_socket){
       exit(0);
       return;
   }
+  send(server_socket, buffer, strlen(buffer), 0);
   while(1) {
   int k = recv(server_socket, buffer, sizeof(buffer)-1, 0);
   if(k <= 0) {
@@ -99,11 +127,8 @@ int main(int argc, char *argv[] ) {
   if(argc>1){
     IP=argv[1];
   }
-  char pieceType[] = "Y"; //figure out how to randomize
-  char whichSpot[256] = "-1";
-  int spot = 0;
 
-  int server_socket = client_tcp_handshake(IP);
+  server_socket = client_tcp_handshake(IP);
   printf("Welcome to TTT!\n");
 
   clientLogic(server_socket);
