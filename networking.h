@@ -28,7 +28,7 @@ struct Player {
   int wins;
   int losses;
   int ranking;
-  int searching;
+  int searching; //0 if in match
   int fd;
 };
 

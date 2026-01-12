@@ -66,6 +66,34 @@ void remove_player(int fd) {
   print_leaderboard();
 }
 
+void add_player(char* username, int fd) {
+
+  //check if username alr exists
+
+  if (num_players >= MAX_PLAYERS) {
+    printf("Max players reached, cannot add more players.\n");
+    return;
+  }
+  else {
+    struct Player new_player;
+    strncpy(new_player.username, username, BUFFER_SIZE);
+    new_player.wins = 0;
+    new_player.losses = 0;
+    new_player.ranking = num_players + 1;
+    new_player.searching = 1;
+    new_player.fd = fd;
+
+    players[num_players] = new_player;
+    num_players++;
+    printf("%s has joined.\n", username);
+    print_leaderboard();
+  }
+}
+
+  
+
+
+
 void subserver_logic(int client_socket){
   char buffer[BUFFER_SIZE];
   char username[BUFFER_SIZE];
@@ -77,7 +105,7 @@ void subserver_logic(int client_socket){
   }
 
   username[k - 1] = '\0';
-  printf("%s has joined.\n", username);
+  //printf("%s has joined.\n", username);
   // subserver should be reading for a username first, then the leaderboard ranking (array?)
   while(1) {  
     int k = recv(client_socket, buffer, sizeof(buffer)-1, 0); //recv or read??
@@ -86,7 +114,7 @@ void subserver_logic(int client_socket){
         err(k, "issue receiving");
     }
     if(k==0) {
-      printf("%s has left.\n", username);
+      //printf("%s has left.\n", username);
       close(client_socket);
       exit(0);
       break;
