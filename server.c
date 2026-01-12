@@ -1,12 +1,29 @@
 #include "networking.h"
 int listen_socket;
 
+Player players[MAX_PLAYERS];
+Match matches[MAX_MATCHES];
+int num_players = 0;
+int num_matches = 0;
+
 static void sighandler(int signo) {
   if ( signo == SIGINT ) {
     close(listen_socket);
     exit(0);
   }
+}
+
+void print_leaderboard() {
+  printf("Leaderboard:\n");
+  printf("Rank\tUsername\tWins\tLosses\n");
+  //printing random players for now but need to sort (prob using merge sort or smth)
+  //can make this prettier
+  for(int i = 0; i < 10; i++) {
+    printf("%d\t%s\t%d\t%d\n", i + 1, players[i].username, players[i].wins, players[i].losses);
   }
+  printf("_______________________________\n");
+}
+
 void subserver_logic(int client_socket){
   char buffer[BUFFER_SIZE];
   char username[BUFFER_SIZE];
