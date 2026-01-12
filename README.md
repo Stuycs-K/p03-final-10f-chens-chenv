@@ -7,12 +7,19 @@ Vincent Chen & Serena Chen
 
 ### Project Description:
 
-Explain what is this project. (CHANGE THIS!!!!!)
+This project seeks to implement tic-tac-toe using a ranked leaderboard and tracking game mechanics by using the following concepts:
+- Allocating memory (refine)
+- Working with files (refine)
+- Signals
+- Sockets
+
+It's fun to play!
 
 ### Instructions:
 
-How does the user install/compile/run the program. (CHANGE THIS!!!!!)
-How does the user interact with this program? (CHANGE THIS!!!!!)
+The user compiles/runs this program by running make server in one terminal window, and running make client a positive number x of times, where x is greater than 2. From there, a subset will be matched into games with one another, where they'll be playing until one side wins or there is a draw.
+
+The user interacts with this program by typing in a number from 1-9 inclusive to place a piece on the board. A player wins once they earn "three-in-a-row" before their opponent, at which point the game will end.
 
 ### Resources/ References:
 

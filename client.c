@@ -123,7 +123,7 @@ int main(int argc, char *argv[] ) {
   }
 
   server_socket = client_tcp_handshake(IP);
-  printf("Welcome to TTT!\n");
+  printf("Welcome to Tic-Tac-Toe: Multiplayer Ranked!\n");
 
   clientLogic(server_socket);
   close(server_socket);

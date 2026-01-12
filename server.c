@@ -168,6 +168,10 @@ void matchmake() {
 // check for win/draw
 // switch turn
 // tell next player
+void game_move(int i, int spot) {
+  //find player i
+  printf("not working, try again later\n"); //implement in-class once i figure out the whole rewrite
+}
 
 
 // void subserver_logic(int client_socket){

@@ -40,7 +40,7 @@ if ((status = getaddrinfo(NULL, PORT, &hints, &results)) != 0) {
   //set socket to listen state
   int l = listen(clientd, 10);
   err(l,"listen error");
-  printf("Welcome to [game name]!\n");
+  printf("Welcome to Tic-Tac-Toe: Multiplayer Ranked!\n");
 
 
   //free the structs used by getaddrinfo
