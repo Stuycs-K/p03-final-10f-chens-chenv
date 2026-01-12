@@ -10,13 +10,12 @@ static void sighandler(int signo) {
     }
   }
 
-  void printtheboard() {
+void printtheboard() {
   printf("  %c  |  %c  |  %c  \n", board[1], board[2], board[3]); 
   printf("=====*=====*=====\n");
   printf("  %c  |  %c  |  %c  \n",board[4],board[5],board[6]); 
   printf("=====*=====*=====\n");
   printf("  %c  |  %c  |  %c  \n",board[7],board[8], board[9]);
-
 }
 
 void prompt() {
@@ -50,7 +49,7 @@ void prompt() {
   send(server_socket, msg, strlen(msg), 0);
 }
 
-  void readinput(char *msg) {
+void readinput(char *msg) {
   if(!strncmp(msg, "THANKS", 6)) {
     printf("Thank you. Entering pool...\n");
   }
@@ -87,7 +86,7 @@ void clientLogic(int server_socket){
       printf("no input given, ending program\n");
       exit(0);
       return;
-  }
+    }
   send(server_socket, buffer, strlen(buffer), 0);
   while(1) {
   int k = recv(server_socket, buffer, sizeof(buffer)-1, 0);
@@ -96,7 +95,7 @@ void clientLogic(int server_socket){
   }
   buffer[k] = '\0';
   readinput(buffer);
-}
+  }
 }
 
 int main(int argc, char *argv[] ) {

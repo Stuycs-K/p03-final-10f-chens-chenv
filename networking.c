@@ -54,13 +54,13 @@ if ((status = getaddrinfo(NULL, PORT, &hints, &results)) != 0) {
  *blocks until connection is made.
  */
 int server_tcp_handshake(int listen_socket){
-    int client_socket;
+  int client_socket;
 
-    //accept() the client connection
-    client_socket = accept(listen_socket, NULL, NULL);
-    err(client_socket, "server_tc-_handshake: issue with accepting");
+  //accept() the client connection
+  client_socket = accept(listen_socket, NULL, NULL);
+  err(client_socket, "server_tc-_handshake: issue with accepting");
 
-    return client_socket;
+  return client_socket;
 }
 
 
@@ -70,19 +70,19 @@ int server_tcp_handshake(int listen_socket){
 int client_tcp_handshake(char * server_address) {
 
   //getaddrinfo
-    //setup structs for getaddrinfo
+  //setup structs for getaddrinfo
   int status;
-struct addrinfo hints;
-struct addrinfo *results;  // will point to the results
+  struct addrinfo hints;
+  struct addrinfo *results;  // will point to the results
 
-memset(&hints, 0, sizeof hints); // make sure the struct is empty
-hints.ai_family = AF_UNSPEC;     // don't care IPv4 or IPv6
-hints.ai_socktype = SOCK_STREAM; // TCP stream sockets
+  memset(&hints, 0, sizeof hints); // make sure the struct is empty
+  hints.ai_family = AF_UNSPEC;     // don't care IPv4 or IPv6
+  hints.ai_socktype = SOCK_STREAM; // TCP stream sockets
 
-if ((status = getaddrinfo(server_address, PORT, &hints, &results)) != 0) {
+  if ((status = getaddrinfo(server_address, PORT, &hints, &results)) != 0) {
     fprintf(stderr, "gai error: %s\n", gai_strerror(status));
     exit(1);
-}
+  }
 
 
   //create the socket
@@ -92,15 +92,15 @@ if ((status = getaddrinfo(server_address, PORT, &hints, &results)) != 0) {
   //create the socket
   serverd = socket(results->ai_family, results->ai_socktype, results->ai_protocol);
   if (serverd < 0) {
-        err(-1, "error with creating socket\n");
-    }
+    err(-1, "error with creating socket\n");
+  }
 
   //connect() to the server
   if (connect(serverd, results->ai_addr, results->ai_addrlen) < 0) {
-        err(-1, "error connecting");
-    }
+    err(-1, "error connecting");
+  }
 
- // free(hints);
+  // free(hints);
   freeaddrinfo(results);
 
   return serverd;
