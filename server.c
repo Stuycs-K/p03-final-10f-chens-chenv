@@ -39,6 +39,33 @@ void update_stats(char* username, int win) {
   }
 }
 
+int find_player(int fd) {
+  for(int i = 0; i < num_players; i++) {
+    if(players[i].fd == fd) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+void remove_player(int fd) {
+  
+  int i = find_player(fd);
+  if(i == -1) {
+    return;
+  }
+
+  printf("%s has left.\n", players[i].username);
+
+  //add checking if player is in a match, add handling to client
+
+  for(int j = i; j < num_players - 1; j++) {
+    players[j] = players[j + 1];
+  }
+  num_players--;
+  print_leaderboard();
+}
+
 void subserver_logic(int client_socket){
   char buffer[BUFFER_SIZE];
   char username[BUFFER_SIZE];
