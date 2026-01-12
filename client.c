@@ -5,10 +5,10 @@
   int server_socket;
 
 static void sighandler(int signo) {
-    if ( signo == SIGINT ) {
-      exit(0);
-    }
+  if ( signo == SIGINT ) {
+    exit(0);
   }
+}
 
 void printtheboard() {
   printf("  %c  |  %c  |  %c  \n", board[1], board[2], board[3]); 
@@ -59,7 +59,8 @@ void readinput(char *msg) {
   else if(!strncmp(msg, "MATCH", 5)) {
     char opponent[64], piece;
     sscanf(msg, "MATCH %s %c", opponent, &piece);
-    printf("Entering match with %s...\n", opponent);
+    pieceType = piece;
+    printf("Entering match with %s...\nYou are %c\n", opponent, pieceType);
     for (int i = 1; i <= 9; i++) {
       board[i] = ' ';
     }
@@ -70,13 +71,18 @@ void readinput(char *msg) {
   }
   else if(!strncmp(msg, "INVALID", 7)) {
     printf("Invalid! Try again.\n");
+    printtheboard();
+    prompt();
   }
   else if(!strncmp(msg, "WIN", 3)) {
     printf("You win!\nSending back to pool...\n");
+    printtheboard();
   }
   else {
     printf("You lost, sending back to pool...");
+    printtheboard();
   }
+  // add case for draw and opponent leaving
 }
 
 void clientLogic(int server_socket){
