@@ -35,7 +35,7 @@ if ((status = getaddrinfo(NULL, PORT, &hints, &results)) != 0) {
   //bind the socket to address and port
   int b = bind(clientd, results->ai_addr, results->ai_addrlen);
   err(b,"bind error");
-  printf("bind complete\n");
+  //printf("bind complete\n");
 
   //set socket to listen state
   int l = listen(clientd, 10);

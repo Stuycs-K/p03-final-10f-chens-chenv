@@ -22,5 +22,4 @@ networking.o: networking.c networking.h
 	@gcc -Wall -c networking.c
 
 clean:
-	rm *.o
-	rm *~
+	@rm *.o client server

@@ -222,7 +222,7 @@ int main(int argc, char *argv[] ) {
             max = client_socket;
           }
 
-          printf("new client");
+          //printf("new client");
         }
         else {
           char buffer[BUFFER_SIZE];
