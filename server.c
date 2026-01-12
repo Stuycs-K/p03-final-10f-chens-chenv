@@ -164,7 +164,7 @@ void subserver_logic(int client_socket){
   matchmake();
 
   while(1) {  
-    int k = recv(client_socket, buffer, sizeof(buffer)-1, 0); //recv or read??
+    
     if(k < 0) {
         close(client_socket);
         err(k, "issue receiving");
@@ -197,20 +197,55 @@ int main(int argc, char *argv[] ) {
   signal(SIGINT, sighandler);
   listen_socket = server_setup();
 
-  fd_set read_fds;
-  FD_ZERO(&read_fds);
+  fd_set read_fds1, read_fds2;
+  FD_ZERO(&read_fds1);
   FD_SET(listen_socket, &read_fds);
+  int max = listen_socket;
 
   while(1) {
 
-    for(int i = 0; i <= listen_socket; i++) {
-      if(FD_ISSET(i, &read_fds)) {
+    read_fds2 = read_fds1;
+    select(max + 1, &read_fds2, NULL, NULL, NULL);
+
+    for (int i = 0; i <= max; i++) {
+      if (FD_ISSET(i, &read_fds2)) {
         
-        if(i = listen_socket) {
+        if (i == listen_socket) {
           int client_socket = server_tcp_handshake(listen_socket);
           if (client_socket < 0) continue;
 
+          FD_SET(client_socket, &read_fds1);
+          if (client_socket > max) {
+            max = client_socket;
+          }
 
+          printf("new client");
+        }
+        else {
+          char buffer[BUFFER_SIZE];
+          int k = recv(i, buffer, sizeof(buffer)-1, 0); //recv or read??
+
+          if (k <= 0) {
+
+            remove_player(i);
+            close(i);
+            FD_CLR(i, &read_fds1);
+            matchmake();
+            
+          }
+          else {
+
+            buffer[k] = '\0';
+            
+
+            if (strncmp(buffer, "MOVE", 4) == 0) {
+              int spot;
+              if (sscanf(buffer + 5, "%d", &spot) == 1) {
+                game_move(i, spot);
+                matchmake();
+              }
+            }
+          }
         }
     } 
     
