@@ -154,6 +154,7 @@ void subserver_logic(int client_socket){
   send(client_socket, "POOL_WAIT\n", 10, 0);
 
   //check for matches
+  matchmake();
 
   while(1) {  
     int k = recv(client_socket, buffer, sizeof(buffer)-1, 0); //recv or read??
@@ -169,6 +170,8 @@ void subserver_logic(int client_socket){
       break;
     }
     buffer[k] = '\0';
+
+    //handle the moves
 
     int n = send(client_socket, buffer, strlen(buffer), 0); //send or write??
     err(n, "issue sending in subserver");
