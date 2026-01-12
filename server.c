@@ -126,15 +126,22 @@ void matchmake() {
 
           send(players[i].fd, "YOUR_TURN\n", 10, 0);
 
-          break;
+          return;
         }
       }
     }
   }
 }
 
-  
-
+//game_move
+// find match player is in 
+// check if its players turn
+// check if valid move
+// make move
+// send board update to both players
+// check for win/draw
+// switch turn 
+// tell next player
 
 
 void subserver_logic(int client_socket){
@@ -190,9 +197,23 @@ int main(int argc, char *argv[] ) {
   signal(SIGINT, sighandler);
   listen_socket = server_setup();
 
+  fd_set read_fds;
+  FD_ZERO(&read_fds);
+  FD_SET(listen_socket, &read_fds);
+
   while(1) {
-    int client_socket = server_tcp_handshake(listen_socket);
-    if (client_socket < 0) continue;
+
+    for(int i = 0; i <= listen_socket; i++) {
+      if(FD_ISSET(i, &read_fds)) {
+        
+        if(i = listen_socket) {
+          int client_socket = server_tcp_handshake(listen_socket);
+          if (client_socket < 0) continue;
+
+
+        }
+    } 
+    
     int f = fork();
 
     if(f == 0) {
