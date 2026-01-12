@@ -172,6 +172,13 @@ void subserver_logic(int client_socket){
     buffer[k] = '\0';
 
     //handle the moves
+    if (strncmp(buffer, "MOVE", 4) == 0) {
+      int spot;
+      if (sscanf(buffer + 5, "%d", &spot) == 1) {
+        game_move(client_socket, spot);
+        matchmake();
+      }
+    }
 
     int n = send(client_socket, buffer, strlen(buffer), 0); //send or write??
     err(n, "issue sending in subserver");
