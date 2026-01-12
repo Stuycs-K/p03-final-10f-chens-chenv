@@ -1,6 +1,6 @@
 #include "networking.h"
-  char buffer[256]; 
-  char username[256]; 
+  char buffer[256];
+  char username[256];
   char board[10]; //space, X, or O.
   char pieceType; //X, or O,
   int server_socket;
@@ -12,9 +12,9 @@ static void sighandler(int signo) {
 }
 
 void printtheboard() {
-  printf("  %c  |  %c  |  %c  \n", board[1], board[2], board[3]); 
+  printf("  %c  |  %c  |  %c  \n", board[1], board[2], board[3]);
   printf("=====*=====*=====\n");
-  printf("  %c  |  %c  |  %c  \n",board[4],board[5],board[6]); 
+  printf("  %c  |  %c  |  %c  \n",board[4],board[5],board[6]);
   printf("=====*=====*=====\n");
   printf("  %c  |  %c  |  %c  \n",board[7],board[8], board[9]);
 }
@@ -23,7 +23,10 @@ void prompt() {
   char whichSpot[256];
   int spot;
   while(1) {
-    username[strlen(username)-1] = '\0';
+    if(username[strlen(username)-1]=='\n') {
+      username[strlen(username)-1] = '\0';
+
+    }
     printf("Where do you want to place your %c, %s?\n", pieceType, username);
     printf("[enter number from 1-9, numbered clockwise starting from top left]\n");
     if(!fgets(whichSpot,255,stdin)) {
@@ -35,7 +38,7 @@ void prompt() {
       continue;
     }
     if(spot < 1 || spot > 9) {
-      printf("Invalid! number should be from 1-9");
+      printf("Invalid! number should be from 1-9.\n");
       continue;
     }
     if (board[spot] != ' ') {
@@ -49,6 +52,7 @@ void prompt() {
   char msg[64];
   sprintf(msg, "MOVE %d\n", spot);
   send(server_socket, msg, strlen(msg), 0);
+  printf("Thank you.\n");
 }
 
 void readinput(char *msg) {
@@ -63,9 +67,13 @@ void readinput(char *msg) {
     sscanf(msg, "MATCH %s %c", opponent, &piece);
     pieceType = piece;
     printf("Entering match with %s...\nYou are %c\n", opponent, pieceType);
+
     for (int i = 1; i <= 9; i++) {
       board[i] = ' ';
     }
+    printtheboard();
+      prompt();
+
   }
   else if(!strncmp(msg, "YOUR_TURN", 9)) {
     printtheboard();

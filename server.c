@@ -31,7 +31,7 @@ void update_stats(char* username, int win) {
     if(strcmp(players[i].username, username) == 0) {
       if (win) {
         players[i].wins += 1;
-      } 
+      }
       else {
         players[i].losses += 1;
       }
@@ -51,7 +51,7 @@ int find_player(int fd) {
 }
 
 void remove_player(int fd) {
-  
+
   int i = find_player(fd);
   if(i == -1) {
     return;
@@ -66,7 +66,7 @@ void remove_player(int fd) {
   }
   num_players--;
   if (num_players >= 0) {
-    players[num_players] = (struct Player) {0};  
+    players[num_players] = (struct Player) {0};
   }
   print_leaderboard();
 }
@@ -127,7 +127,30 @@ void matchmake() {
           send(players[i].fd, msg1, strlen(msg1), 0);
           send(players[j].fd, msg2, strlen(msg2), 0);
 
-          send(players[i].fd, "YOUR_TURN\n", 10, 0);
+          int idx = 0;
+
+          while(1) {
+            char buff[256] = "-1";
+            char buff2[256]="-1";
+            if(idx%2==0) {
+              send(players[i].fd, "YOUR_TURN\n", 10, 0);
+              recv(players[i].fd, buff, 7, 0);
+              strncpy(buff2,buff,4);
+              buff2[4]='\0';
+              if(strcmp(buff, "MOVE")==0) {
+                idx++;
+              }
+            }
+            else {
+              send(players[j].fd, "YOUR_TURN\n", 10, 0);
+              recv(players[j].fd, buff, 7, 0);
+              strncpy(buff2,buff,4);
+              buff2[4]='\0';
+              if(strcmp(buff, "MOVE")==0) {
+                idx++;
+              }
+          }
+        }
 
           return;
         }
@@ -137,13 +160,13 @@ void matchmake() {
 }
 
 //game_move
-// find match player is in 
+// find match player is in
 // check if its players turn
 // check if valid move
 // make move
 // send board update to both players
 // check for win/draw
-// switch turn 
+// switch turn
 // tell next player
 
 
@@ -159,15 +182,15 @@ void matchmake() {
 
 //   username[k - 1] = '\0';
 //   //printf("%s has joined.\n", username);
-  
+
 //   add_player(username, client_socket);
 //   send(client_socket, "POOL_WAIT\n", 10, 0);
 
 //   //check for matches
 //   matchmake();
 
-//   while(1) {  
-    
+//   while(1) {
+
 //     if(k < 0) {
 //         close(client_socket);
 //         err(k, "issue receiving");
@@ -212,7 +235,7 @@ int main(int argc, char *argv[] ) {
 
     for (int i = 0; i <= max; i++) {
       if (FD_ISSET(i, &read_fds2)) {
-        
+
         if (i == listen_socket) {
           int client_socket = server_tcp_handshake(listen_socket);
           if (client_socket < 0) continue;
@@ -260,7 +283,7 @@ int main(int argc, char *argv[] ) {
           }
 
         }
-      } 
+      }
     }
   }
   return 0;
