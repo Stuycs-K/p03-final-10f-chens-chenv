@@ -144,54 +144,54 @@ void matchmake() {
 // tell next player
 
 
-void subserver_logic(int client_socket){
-  char username[BUFFER_SIZE];
-  char buffer[BUFFER_SIZE];
+// void subserver_logic(int client_socket){
+//   char username[BUFFER_SIZE];
+//   char buffer[BUFFER_SIZE];
 
-  int k = recv(client_socket, username, sizeof(username) - 1, 0);
-  if(k <= 0) {
-    close(client_socket);
-    return;
-  }
+//   int k = recv(client_socket, username, sizeof(username) - 1, 0);
+//   if(k <= 0) {
+//     close(client_socket);
+//     return;
+//   }
 
-  username[k - 1] = '\0';
-  //printf("%s has joined.\n", username);
+//   username[k - 1] = '\0';
+//   //printf("%s has joined.\n", username);
   
-  add_player(username, client_socket);
-  send(client_socket, "POOL_WAIT\n", 10, 0);
+//   add_player(username, client_socket);
+//   send(client_socket, "POOL_WAIT\n", 10, 0);
 
-  //check for matches
-  matchmake();
+//   //check for matches
+//   matchmake();
 
-  while(1) {  
+//   while(1) {  
     
-    if(k < 0) {
-        close(client_socket);
-        err(k, "issue receiving");
-    }
-    if(k == 0) {
-      //printf("%s has left.\n", username);
-      remove_player(client_socket);
-      close(client_socket);
-      exit(0);
-      break;
-    }
-    buffer[k] = '\0';
+//     if(k < 0) {
+//         close(client_socket);
+//         err(k, "issue receiving");
+//     }
+//     if(k == 0) {
+//       //printf("%s has left.\n", username);
+//       remove_player(client_socket);
+//       close(client_socket);
+//       exit(0);
+//       break;
+//     }
+//     buffer[k] = '\0';
 
-    //handle the moves
-    if (strncmp(buffer, "MOVE", 4) == 0) {
-      int spot;
-      if (sscanf(buffer + 5, "%d", &spot) == 1) {
-        game_move(client_socket, spot);
-        matchmake();
-      }
-    }
+//     //handle the moves
+//     if (strncmp(buffer, "MOVE", 4) == 0) {
+//       int spot;
+//       if (sscanf(buffer + 5, "%d", &spot) == 1) {
+//         game_move(client_socket, spot);
+//         matchmake();
+//       }
+//     }
 
-    int n = send(client_socket, buffer, strlen(buffer), 0); //send or write??
-    err(n, "issue sending in subserver");
-  }
-  close(client_socket);
-}
+//     int n = send(client_socket, buffer, strlen(buffer), 0); //send or write??
+//     err(n, "issue sending in subserver");
+//   }
+//   close(client_socket);
+// }
 
 int main(int argc, char *argv[] ) {
   signal(SIGINT, sighandler);
@@ -199,7 +199,7 @@ int main(int argc, char *argv[] ) {
 
   fd_set read_fds1, read_fds2;
   FD_ZERO(&read_fds1);
-  FD_SET(listen_socket, &read_fds);
+  FD_SET(listen_socket, &read_fds1);
   int max = listen_socket;
 
   while(1) {
@@ -231,35 +231,33 @@ int main(int argc, char *argv[] ) {
             close(i);
             FD_CLR(i, &read_fds1);
             matchmake();
-            
+
           }
           else {
 
             buffer[k] = '\0';
-            
+            int index = find_player(i);
 
-            if (strncmp(buffer, "MOVE", 4) == 0) {
-              int spot;
-              if (sscanf(buffer + 5, "%d", &spot) == 1) {
-                game_move(i, spot);
-                matchmake();
+            if(index < 0) {
+              buffer[strlen(buffer) - 1] = '\0';
+              add_player(buffer, i);
+              send(i, "POOL_WAIT\n", 10, 0);
+              matchmake();
+            }
+            else {
+
+              if (strncmp(buffer, "MOVE", 4) == 0) {
+                int spot;
+                if (sscanf(buffer + 5, "%d", &spot) == 1) {
+                  //game_move(i, spot);
+                  matchmake();
+                }
               }
             }
           }
-        }
-    } 
-    
-    int f = fork();
 
-    if(f == 0) {
-      close(listen_socket);
-      subserver_logic(client_socket);
-      exit(0);
-    }
-    //always listen for disconnecting clients?
-    else {
-      // parent
-      close(client_socket);
+        }
+      } 
     }
   }
   return 0;
