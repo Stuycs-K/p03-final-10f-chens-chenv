@@ -95,12 +95,12 @@ void clientLogic(int server_socket){
     }
   send(server_socket, buffer, strlen(buffer), 0);
   while(1) {
-  int k = recv(server_socket, buffer, sizeof(buffer)-1, 0);
-  if(k <= 0) {
-    exit(0);
-  }
-  buffer[k] = '\0';
-  readinput(buffer);
+    int k = recv(server_socket, buffer, sizeof(buffer)-1, 0);
+    if(k <= 0) {
+      exit(0);
+    }
+    buffer[k] = '\0';
+    readinput(buffer);
   }
 }
 
