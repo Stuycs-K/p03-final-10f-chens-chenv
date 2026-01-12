@@ -95,8 +95,8 @@ void add_player(char* username, int fd) {
 
 
 void subserver_logic(int client_socket){
-  char buffer[BUFFER_SIZE];
   char username[BUFFER_SIZE];
+  char buffer[BUFFER_SIZE];
 
   int k = recv(client_socket, username, sizeof(username) - 1, 0);
   if(k <= 0) {
@@ -106,19 +106,26 @@ void subserver_logic(int client_socket){
 
   username[k - 1] = '\0';
   //printf("%s has joined.\n", username);
-  // subserver should be reading for a username first, then the leaderboard ranking (array?)
+  
+  add_player(username, client_socket);
+  send(client_socket, "POOL_WAIT\n", 10, 0);
+
+  //check for matches
+
   while(1) {  
     int k = recv(client_socket, buffer, sizeof(buffer)-1, 0); //recv or read??
     if(k < 0) {
         close(client_socket);
         err(k, "issue receiving");
     }
-    if(k==0) {
+    if(k == 0) {
       //printf("%s has left.\n", username);
+      remove_player(client_socket);
       close(client_socket);
       exit(0);
       break;
     }
+    buffer[k] = '\0';
 
     int n = send(client_socket, buffer, strlen(buffer), 0); //send or write??
     err(n, "issue sending in subserver");
@@ -146,4 +153,5 @@ int main(int argc, char *argv[] ) {
       close(client_socket);
     }
   }
+  return 0;
 }
