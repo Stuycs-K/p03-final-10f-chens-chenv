@@ -24,6 +24,21 @@ void print_leaderboard() {
   printf("_______________________________\n");
 }
 
+void update_stats(char* username, int win) {
+
+  for(int i = 0; i < num_players; i++) {
+    if(strcmp(players[i].username, username) == 0) {
+      if (win) {
+        players[i].wins += 1;
+      } else {
+        players[i].losses += 1;
+      }
+      print_leaderboard();
+      break;
+    }
+  }
+}
+
 void subserver_logic(int client_socket){
   char buffer[BUFFER_SIZE];
   char username[BUFFER_SIZE];
