@@ -20,4 +20,23 @@ void err(int i, char*message);
 int server_setup();
 int client_tcp_handshake(char*server_address);
 int server_tcp_handshake(int listen_socket);
+
+typedef struct Player {
+  char username[BUFFER_SIZE];
+  int wins;
+  int losses;
+  int ranking;
+  int searching;
+  int fd;
+};
+
+typedef struct Match {
+  int id;
+  struct Player player1;
+  struct Player player2;
+  char board[10];
+  int turn;
+  int end;
+};
+
 #endif
