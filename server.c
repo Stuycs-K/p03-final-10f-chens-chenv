@@ -18,6 +18,7 @@ void print_leaderboard() {
   printf("Rank\tUsername\tWins\tLosses\n");
   //printing random players for now but need to sort (prob using merge sort or smth)
   //can make this prettier
+  //maybe change to only rpitn exisiting players if less htan 10 plaers
   for(int i = 0; i < 10; i++) {
     printf("%d\t%s\t%d\t%d\n", i + 1, players[i].username, players[i].wins, players[i].losses);
   }
@@ -30,7 +31,8 @@ void update_stats(char* username, int win) {
     if(strcmp(players[i].username, username) == 0) {
       if (win) {
         players[i].wins += 1;
-      } else {
+      } 
+      else {
         players[i].losses += 1;
       }
       print_leaderboard();
@@ -83,10 +85,51 @@ void add_player(char* username, int fd) {
     new_player.searching = 1;
     new_player.fd = fd;
 
+    players[num_players] = new_player;
     num_players++;
-    players[num_players - 1] = new_player;
     printf("%s has joined.\n", username);
     print_leaderboard();
+  }
+}
+
+void matchmake() {
+
+  for(int i = 0; i < num_players; i++) {
+    if(players[i].searching == 1) {
+      for(int j = i + 1; j < num_players; j++) {
+        if(players[j].searching == 1) {
+
+          //maybe add pritn statemnet for match found, who vs who
+          //handle matchcount
+          players[i].searching = 0;
+          players[j].searching = 0;
+
+          struct Match new_match;
+          new_match.id = num_matches + 1;
+          new_match.player1 = players[i];
+          new_match.player2 = players[j];
+          memset(new_match.board, ' ', sizeof(new_match.board));
+          new_match.turn = 1;
+          new_match.end = 0;
+
+          matches[num_matches] = new_match;
+          num_matches++;
+
+          //notify players
+          char msg1[BUFFER_SIZE];
+          char msg2[BUFFER_SIZE];
+          snprintf(msg1, sizeof(msg1), "MATCH %s X\n", players[j].username);
+          snprintf(msg2, sizeof(msg2), "MATCH %s O\n", players[i].username);
+
+          send(players[i].fd, msg1, strlen(msg1), 0);
+          send(players[j].fd, msg2, strlen(msg2), 0);
+
+          send(players[i].fd, "YOUR_TURN\n", 10, 0);
+
+          break;
+        }
+      }
+    }
   }
 }
 
