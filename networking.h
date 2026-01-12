@@ -10,6 +10,7 @@
 #include <sys/wait.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <sys/select.h>
 
 
 #ifndef NETWORKING_H

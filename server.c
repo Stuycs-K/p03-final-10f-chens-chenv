@@ -65,6 +65,9 @@ void remove_player(int fd) {
     players[j] = players[j + 1];
   }
   num_players--;
+  if (num_players >= 0) {
+    players[num_players] = (struct Player) {0};  
+  }
   print_leaderboard();
 }
 
