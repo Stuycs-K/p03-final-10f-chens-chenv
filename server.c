@@ -95,7 +95,7 @@ void add_player(char* username, int fd) {
   }
 }
 
-void matchmake() {
+int matchmake() {
 
   for(int i = 0; i < num_players; i++) {
     if(players[i].searching == 1) {
@@ -129,30 +129,11 @@ void matchmake() {
 
           int idx = 0;
 
-          while(1) {
-            char buff[256] = "-1";
-            char buff2[256]="-1";
-            if(idx%2==0) {
-              send(players[i].fd, "YOUR_TURN\n", 10, 0);
-              recv(players[i].fd, buff, 7, 0);
-              strncpy(buff2,buff,4);
-              buff2[4]='\0';
-              if(strcmp(buff, "MOVE")==0) {
-                idx++;
-              }
-            }
-            else {
-              send(players[j].fd, "YOUR_TURN\n", 10, 0);
-              recv(players[j].fd, buff, 7, 0);
-              strncpy(buff2,buff,4);
-              buff2[4]='\0';
-              if(strcmp(buff, "MOVE")==0) {
-                idx++;
-              }
-          }
-        }
+          send(players[i].fd, "YOUR_TURN\n", 10, 0);
 
-          return;
+
+
+          return num_matches-1;
         }
       }
     }
@@ -161,18 +142,48 @@ void matchmake() {
 
 //game_move
 // find match player is in
-// check if its players turn
-// check if valid move
+// check if its players turn done
+// check if valid move done
 // make move
 // send board update to both players
 // check for win/draw
 // switch turn
 // tell next player
-void game_move(int i, int spot) {
-  //find player i
-  printf("not working, try again later\n"); //implement in-class once i figure out the whole rewrite
-}
+/*
+void game_move(int i, int spot, int matchnumber) {
 
+  while(1) {
+    char buff[256] = "-1";
+    char buff2[256]="-1";
+    if(idx%2==0) {
+      send((matches[matchnumber].player1).fd, "YOUR_TURN\n", 10, 0);
+      recv((matches[matchnumber].player1).fd, buff, 7, 0);
+      strncpy(buff2,buff,4);
+      buff2[4]='\0';
+      if(strcmp(buff, "MOVE")==0) {
+        idx++;
+      }
+      for(int ir = 0; ir < 10; ir++) {
+        (matches[matchnumber].player2).board[ir]=(matches[matchnumber].player1).board[ir];
+      }
+    }
+    else {
+      send((matches[matchnumber].player2).fd, "YOUR_TURN\n", 10, 0);
+      recv((matches[matchnumber].player2).fd, buff, 7, 0);
+      strncpy(buff2,buff,4);
+      buff2[4]='\0';
+      if(strcmp(buff, "MOVE")==0) {
+        idx++;
+      }
+      for(int ir = 0; ir < 10; ir++) {
+        (matches[matchnumber].player1).board[ir]=(matches[matchnumber].player2).board[ir];
+      }
+
+  }
+}
+  //find player i
+}
+*/
 
 // void subserver_logic(int client_socket){
 //   char username[BUFFER_SIZE];
@@ -212,7 +223,7 @@ void game_move(int i, int spot) {
 //     if (strncmp(buffer, "MOVE", 4) == 0) {
 //       int spot;
 //       if (sscanf(buffer + 5, "%d", &spot) == 1) {
-//         game_move(client_socket, spot);
+//         game_move(client_socket, spot); //needs match #
 //         matchmake();
 //       }
 //     }
@@ -279,8 +290,8 @@ int main(int argc, char *argv[] ) {
               if (strncmp(buffer, "MOVE", 4) == 0) {
                 int spot;
                 if (sscanf(buffer + 5, "%d", &spot) == 1) {
-                  //game_move(i, spot);
-                  matchmake();
+                  //game_move(i, spot, r);
+                  int r = matchmake();
                 }
               }
             }
