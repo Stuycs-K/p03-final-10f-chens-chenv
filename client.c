@@ -23,6 +23,7 @@ void prompt() {
   char whichSpot[256];
   int spot;
   while(1) {
+    username[strlen(username)-1] = '\0';
     printf("Where do you want to place your %c, %s?\n", pieceType, username);
     printf("[enter number from 1-9, numbered clockwise starting from top left]\n");
     if(!fgets(whichSpot,255,stdin)) {
@@ -36,13 +37,13 @@ void prompt() {
     if(spot < 1 || spot > 9) {
       printf("Invalid! number should be from 1-9");
       continue;
+    }
     if (board[spot] != ' ') {
       printf("Invalid! Spot already taken.\n");
       continue;
     }
 
     break;
-    }
   }
   board[spot] = pieceType;
   char msg[64];
