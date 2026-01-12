@@ -1,5 +1,6 @@
 #include "networking.h"
-  char buffer[256]; //username
+  char buffer[256]; 
+  char username[256]; 
   char board[10]; //space, X, or O.
   char pieceType; //X, or O,
   int server_socket;
@@ -22,7 +23,7 @@ void prompt() {
   char whichSpot[256];
   int spot;
   while(1) {
-    printf("Where do you want to place your %c, %s?\n", pieceType, buffer);
+    printf("Where do you want to place your %c, %s?\n", pieceType, username);
     printf("[enter number from 1-9, numbered clockwise starting from top left]\n");
     if(!fgets(whichSpot,255,stdin)) {
       continue;
@@ -88,12 +89,13 @@ void readinput(char *msg) {
 void clientLogic(int server_socket){
   printf("Please enter a username: ");
   fflush(stdout);
-    if(fgets(buffer, sizeof(buffer), stdin) == NULL) {
-      printf("no input given, ending program\n");
-      exit(0);
-      return;
-    }
-  send(server_socket, buffer, strlen(buffer), 0);
+  if(fgets(username, sizeof(username), stdin) == NULL) {
+    printf("no input given, ending program\n");
+    exit(0);
+    return;
+  }
+  username[strlen(username)] = '\0';
+  send(server_socket, username, strlen(username), 0);
   while(1) {
     int k = recv(server_socket, buffer, sizeof(buffer)-1, 0);
     if(k <= 0) {
