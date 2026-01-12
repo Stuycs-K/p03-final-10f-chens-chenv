@@ -1,8 +1,8 @@
 #include "networking.h"
 int listen_socket;
 
-Player players[MAX_PLAYERS];
-Match matches[MAX_MATCHES];
+struct Player players[MAX_PLAYERS];
+struct Match matches[MAX_MATCHES];
 int num_players = 0;
 int num_matches = 0;
 
@@ -83,8 +83,8 @@ void add_player(char* username, int fd) {
     new_player.searching = 1;
     new_player.fd = fd;
 
-    players[num_players] = new_player;
     num_players++;
+    players[num_players - 1] = new_player;
     printf("%s has joined.\n", username);
     print_leaderboard();
   }
