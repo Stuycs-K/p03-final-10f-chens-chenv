@@ -164,12 +164,12 @@ void game_move(int i, int spot) {
 // find match player is in
 //DONE
   int matidx = -1;
-  int playidx = find_player(fd);
+  int playidx = find_player(i);
   if(playidx==-1) {
-    return -1;
+    return;
   }
   for(int i=0;i<num_matches;i++){
-        if((matches[i].player1.fd == fd || matches[i].player2.fd == fd) && !matches[i].end){
+        if((matches[i].player1.fd == i || matches[i].player2.fd == i) && !matches[i].end){
             matidx = i;
             break;
         }
@@ -187,35 +187,40 @@ void game_move(int i, int spot) {
     //check if its players turn
     //DONE
     if((m->turn == 1 && player_piece != 'X') || (m->turn == 2 && player_piece != 'O')) {
-        send(i, "INVALID\n", 8, 0);
+        send(i, "NOTTURN\n", 8, 0);
         return;
     }
 
   while(1) {
     char buff[256] = "-1";
     char buff2[256]="-1";
+    int idx;
+    if(m->turn == 1) {
+      idx = 0;
+    } 
+    else{ idx = 1;}
     if(idx%2==0) {
-      send((matches[matchnumber].player1).fd, "YOUR_TURN\n", 10, 0);
-      recv((matches[matchnumber].player1).fd, buff, 7, 0);
+      send(m->player1.fd, "YOUR_TURN\n", 10, 0);
+      recv(m->player1.fd, buff, 7, 0);
       strncpy(buff2,buff,4);
       buff2[4]='\0';
       if(strcmp(buff, "MOVE")==0) {
-        idx++;
+        m->turn = 2;
       }
       for(int ir = 0; ir < 10; ir++) {
-        (matches[matchnumber].player2).board[ir]=(matches[matchnumber].player1).board[ir];
+        m->player2.board[ir] = m->player1.board[ir];
       }
     }
     else {
-      send((matches[matchnumber].player2).fd, "YOUR_TURN\n", 10, 0);
-      recv((matches[matchnumber].player2).fd, buff, 7, 0);
+      send(m->player2.fd, "YOUR_TURN\n", 10, 0);
+      recv(m->player2.fd, buff, 7, 0);
       strncpy(buff2,buff,4);
       buff2[4]='\0';
       if(strcmp(buff, "MOVE")==0) {
-        idx++;
+        m->turn = 1;
       }
       for(int ir = 0; ir < 10; ir++) {
-        (matches[matchnumber].player1).board[ir]=(matches[matchnumber].player2).board[ir];
+        m->player1.board[ir] = m->player2.board[ir];
       }
 
   }

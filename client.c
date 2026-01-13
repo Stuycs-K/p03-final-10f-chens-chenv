@@ -84,6 +84,11 @@ void readinput(char *msg) {
     printtheboard();
     prompt();
   }
+  else if(!strncmp(msg, "NOTTURN", 7)) {
+    printf("HEY! It's not your turn. Be patient!\n");
+    printtheboard();
+  }
+
   else if(!strncmp(msg, "WIN", 3)) {
     printf("You win!\nSending back to pool...\n");
     printtheboard();
