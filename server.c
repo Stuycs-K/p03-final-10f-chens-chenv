@@ -127,9 +127,8 @@ int matchmake() {
           send(players[i].fd, msg1, strlen(msg1), 0);
           send(players[j].fd, msg2, strlen(msg2), 0);
 
-          int idx = 0;
 
-          send(players[i].fd, "YOUR_TURN\n", 10, 0);
+          //send(players[i].fd, "YOUR_TURN\n", 10, 0);
 
 
 
@@ -150,8 +149,8 @@ int matchmake() {
 
 int winnerdinner(char board[10], char piece) {
     int wins[8][3] = {
-        {1,2,3},{4,5,6},{7,8,9},{1,4,7},{2,5,8},{3,6,9},{1,5,9},{3,5,7} 
-    }; //rows, then  cols diags. 
+        {1,2,3},{4,5,6},{7,8,9},{1,4,7},{2,5,8},{3,6,9},{1,5,9},{3,5,7}
+    }; //rows, then  cols diags.
     for(int i=0;i<8;i++){
         if(board[wins[i][0]]==piece && board[wins[i][1]]==piece && board[wins[i][2]]==piece)
             return 1;
@@ -174,12 +173,12 @@ void game_move(int i, int spot) {
             break;
         }
     }
-    
+
     struct Match *m = &matches[matidx];
     char player_piece;
     if (m->player1.fd == i) {
       player_piece = 'X';
-} 
+}
     else {
         player_piece = 'O';
     }
@@ -197,7 +196,7 @@ void game_move(int i, int spot) {
     int idx;
     if(m->turn == 1) {
       idx = 0;
-    } 
+    }
     else{ idx = 1;}
     if(idx%2==0) {
       send(m->player1.fd, "YOUR_TURN\n", 10, 0);
