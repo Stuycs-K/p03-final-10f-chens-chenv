@@ -141,16 +141,55 @@ int matchmake() {
 }
 
 //game_move
-// find match player is in
-// check if its players turn done
 // check if valid move done
 // make move
 // send board update to both players
 // check for win/draw
 // switch turn
 // tell next player
-/*
-void game_move(int i, int spot, int matchnumber) {
+
+int winnerdinner(char board[10], char piece) {
+    int wins[8][3] = {
+        {1,2,3},{4,5,6},{7,8,9},{1,4,7},{2,5,8},{3,6,9},{1,5,9},{3,5,7} 
+    }; //rows, then  cols diags. 
+    for(int i=0;i<8;i++){
+        if(board[wins[i][0]]==piece && board[wins[i][1]]==piece && board[wins[i][2]]==piece)
+            return 1;
+    }
+    return 0;
+}
+
+void game_move(int i, int spot) {
+
+// find match player is in
+//DONE
+  int matidx = -1;
+  int playidx = find_player(fd);
+  if(playidx==-1) {
+    return -1;
+  }
+  for(int i=0;i<num_matches;i++){
+        if((matches[i].player1.fd == fd || matches[i].player2.fd == fd) && !matches[i].end){
+            matidx = i;
+            break;
+        }
+    }
+    
+    struct Match *m = &matches[matidx];
+    char player_piece;
+    if (m->player1.fd == i) {
+      player_piece = 'X';
+} 
+    else {
+        player_piece = 'O';
+    }
+
+    //check if its players turn
+    //DONE
+    if((m->turn == 1 && player_piece != 'X') || (m->turn == 2 && player_piece != 'O')) {
+        send(i, "INVALID\n", 8, 0);
+        return;
+    }
 
   while(1) {
     char buff[256] = "-1";
@@ -183,7 +222,7 @@ void game_move(int i, int spot, int matchnumber) {
 }
   //find player i
 }
-*/
+
 
 // void subserver_logic(int client_socket){
 //   char username[BUFFER_SIZE];
