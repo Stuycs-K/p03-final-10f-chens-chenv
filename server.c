@@ -146,6 +146,12 @@ int matchmake() {
 // check for win/draw
 // switch turn
 // tell next player
+/*
+***
+DONE, need to check though **
+***
+*/
+
 
 int winnerdinner(char board[10], char piece) {
     int wins[8][3] = {
@@ -161,7 +167,11 @@ int winnerdinner(char board[10], char piece) {
 void game_move(int i, int spot) {
 
 // find match player is in
-//DONE
+/*
+***
+DONE
+***
+*/
   int matidx = -1;
   int playidx = find_player(i);
   if(playidx==-1) {
@@ -177,105 +187,60 @@ void game_move(int i, int spot) {
     struct Match *m = &matches[matidx];
     char player_piece;
     if (m->player1.fd == i) {
-      player_piece = 'X';
-}
+        player_piece = 'X';
+    }
     else {
         player_piece = 'O';
     }
 
     //check if its players turn
-    //DONE
+    /*
+    ***
+    DONE
+    ***
+    */
+
     if((m->turn == 1 && player_piece != 'X') || (m->turn == 2 && player_piece != 'O')) {
         send(i, "NOTTURN\n", 8, 0);
         return;
     }
-
-  while(1) {
-    char buff[256] = "-1";
-    char buff2[256]="-1";
-    int idx;
-    if(m->turn == 1) {
-      idx = 0;
+    while(1) {
+      char buff[256] = "-1";
+      char buff2[256]="-1";
+      int idx;
+      if(m->turn == 1) {
+        idx = 0;
+      }
+      else{
+        idx = 1;
+      }
+      if(idx%2==0) {
+        send(m->player1.fd, "YOUR_TURN\n", 10, 0);
+        recv(m->player1.fd, buff, 7, 0);
+        strncpy(buff2,buff,4);
+        buff2[4]='\0';
+        if(strcmp(buff, "MOVE")==0) {
+            m->turn = 2;
+        }
+        for(int ir = 0; ir < 10; ir++) {
+            m->player2.board[ir] = m->player1.board[ir];
+        }
+      }
+      else {
+        send(m->player2.fd, "YOUR_TURN\n", 10, 0);
+        recv(m->player2.fd, buff, 7, 0);
+        strncpy(buff2,buff,4);
+        buff2[4]='\0';
+        if(strcmp(buff, "MOVE")==0) {
+            m->turn = 1;
+        }
+        for(int ir = 0; ir < 10; ir++) {
+            m->player1.board[ir] = m->player2.board[ir];
+        }
     }
-    else{ idx = 1;}
-    if(idx%2==0) {
-      send(m->player1.fd, "YOUR_TURN\n", 10, 0);
-      recv(m->player1.fd, buff, 7, 0);
-      strncpy(buff2,buff,4);
-      buff2[4]='\0';
-      if(strcmp(buff, "MOVE")==0) {
-        m->turn = 2;
-      }
-      for(int ir = 0; ir < 10; ir++) {
-        m->player2.board[ir] = m->player1.board[ir];
-      }
-    }
-    else {
-      send(m->player2.fd, "YOUR_TURN\n", 10, 0);
-      recv(m->player2.fd, buff, 7, 0);
-      strncpy(buff2,buff,4);
-      buff2[4]='\0';
-      if(strcmp(buff, "MOVE")==0) {
-        m->turn = 1;
-      }
-      for(int ir = 0; ir < 10; ir++) {
-        m->player1.board[ir] = m->player2.board[ir];
-      }
-
   }
 }
-  //find player i
-}
 
-
-// void subserver_logic(int client_socket){
-//   char username[BUFFER_SIZE];
-//   char buffer[BUFFER_SIZE];
-
-//   int k = recv(client_socket, username, sizeof(username) - 1, 0);
-//   if(k <= 0) {
-//     close(client_socket);
-//     return;
-//   }
-
-//   username[k - 1] = '\0';
-//   //printf("%s has joined.\n", username);
-
-//   add_player(username, client_socket);
-//   send(client_socket, "POOL_WAIT\n", 10, 0);
-
-//   //check for matches
-//   matchmake();
-
-//   while(1) {
-
-//     if(k < 0) {
-//         close(client_socket);
-//         err(k, "issue receiving");
-//     }
-//     if(k == 0) {
-//       //printf("%s has left.\n", username);
-//       remove_player(client_socket);
-//       close(client_socket);
-//       exit(0);
-//       break;
-//     }
-//     buffer[k] = '\0';
-
-//     //handle the moves
-//     if (strncmp(buffer, "MOVE", 4) == 0) {
-//       int spot;
-//       if (sscanf(buffer + 5, "%d", &spot) == 1) {
-//         game_move(client_socket, spot); //needs match #
-//         matchmake();
-//       }
-//     }
-
-//     int n = send(client_socket, buffer, strlen(buffer), 0); //send or write??
-//     err(n, "issue sending in subserver");
-//   }
-//   close(client_socket);
-// }
 
 int main(int argc, char *argv[] ) {
   signal(SIGINT, sighandler);
