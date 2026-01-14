@@ -160,9 +160,14 @@ int winnerdinner(char board[10], char piece) {
     }; //rows, then  cols diags.
     for(int i=0;i<8;i++){
         if(board[wins[i][0]]==piece && board[wins[i][1]]==piece && board[wins[i][2]]==piece)
-            return 1;
+            return 1; //win
     }
-    return 0;
+    for(int i = 1; i < 10; i++) {
+      if(board[i]==' ') {
+        return 0; //has a space
+      }
+    }
+    return 2; //draw
 }
 
 void game_move(int i, int spot) {
@@ -227,10 +232,15 @@ DONE
             m->player2.board[ir] = m->player1.board[ir];
         }
         if(winnerdinner(m->player2.board, player_piece)==1) {
-          send(m->player2.fd, "LOSE\n", 4,0);
+          send(m->player2.fd, "LOSE\n", 5,0);
           send(m->player1.fd, "WIN\n", 4,0);
           break;
         }
+        else if(winnerdinner(m->player2.board, player_piece)==1) {
+                  send(m->player2.fd, "DRAW\n", 5,0);
+                  send(m->player1.fd, "DRAW\n", 5,0);
+                  break;
+                }
         if(player_piece=='X') {
           player_piece='O';
         }
@@ -251,9 +261,14 @@ DONE
         }
         if(winnerdinner(m->player1.board, player_piece)==1) {
           send(m->player2.fd, "WIN\n", 4,0);
-          send(m->player1.fd, "LOSE\n", 4,0);
+          send(m->player1.fd, "LOSE\n", 5,0);
           break;
         }
+        else if(winnerdinner(m->player2.board, player_piece)==1) {
+                  send(m->player2.fd, "DRAW\n", 5,0);
+                  send(m->player1.fd, "DRAW\n", 5,0);
+                  break;
+                }
         if(player_piece=='X') {
           player_piece='O';
         }
@@ -302,7 +317,7 @@ int main(int argc, char *argv[] ) {
             remove_player(i);
             close(i);
             FD_CLR(i, &read_fds1);
-            matchmake();
+            // matchmake();
 
           }
           else {
@@ -317,13 +332,12 @@ int main(int argc, char *argv[] ) {
               matchmake();
             }
             else {
-
               if (strncmp(buffer, "MOVE", 4) == 0) {
                 int spot;
                 if (sscanf(buffer + 5, "%d", &spot) == 1) {
                   game_move(i, spot);
                   matchmake();
-                }
+                  }
               }
             }
           }
