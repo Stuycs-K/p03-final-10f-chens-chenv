@@ -307,6 +307,7 @@ DONE
         }
     }
   }
+  remove_match(m->id); //check?
 
 }
 
