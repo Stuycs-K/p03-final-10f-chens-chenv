@@ -95,7 +95,7 @@ void add_player(char* username, int fd) {
   }
 }
 
-int matchmake() {
+void matchmake() {
 
   for(int i = 0; i < num_players; i++) {
     if(players[i].searching == 1) {
@@ -119,8 +119,8 @@ int matchmake() {
           num_matches++;
 
           //notify players
-          char msg1[BUFFER_SIZE];
-          char msg2[BUFFER_SIZE];
+          char msg1[BUFFER_SIZE+9];
+          char msg2[BUFFER_SIZE+9];
           snprintf(msg1, sizeof(msg1), "MATCH %s X\n", players[j].username);
           snprintf(msg2, sizeof(msg2), "MATCH %s O\n", players[i].username);
 
@@ -133,7 +133,7 @@ int matchmake() {
 
 
 
-          return num_matches-1;
+          return;
         }
       }
     }
@@ -232,7 +232,7 @@ DONE
           break;
         }
         if(player_piece=='X') {
-          player_piece=='O';
+          player_piece='O';
         }
         else {
           player_piece = 'X';
@@ -255,7 +255,7 @@ DONE
           break;
         }
         if(player_piece=='X') {
-          player_piece=='O';
+          player_piece='O';
         }
         else {
           player_piece = 'X';
@@ -321,8 +321,8 @@ int main(int argc, char *argv[] ) {
               if (strncmp(buffer, "MOVE", 4) == 0) {
                 int spot;
                 if (sscanf(buffer + 5, "%d", &spot) == 1) {
-                  //game_move(i, spot, r);
-                  int r = matchmake();
+                  game_move(i, spot);
+                  matchmake();
                 }
               }
             }
