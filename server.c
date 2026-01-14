@@ -139,6 +139,36 @@ void matchmake() {
     }
   }
 }
+int find_match(int fd) {
+  for(int i = 0; i < num_matches; i++) {
+    if(matches[i].id == fd) {
+      return i;
+    }
+  }
+  return -1;
+}
+void remove_match(int fd) {
+
+  int i = find_match(fd);
+  if(i == -1) {
+    return;
+  }
+
+  printf("Match #%d, between %s and %s, has ended.\n", matches[i].id,
+    (matches[i].player1).username,
+    (matches[i].player2).username);
+
+  //add checking if player is in a match, add handling to client
+
+  for(int j = i; j < num_matches - 1; j++) {
+    matches[j] = matches[j + 1];
+  }
+  num_matches--;
+  if (num_matches >= 0) {
+    matches[num_matches] = (struct Match) {0};
+  }
+  print_leaderboard();
+}
 
 //game_move
 // check if valid move done
@@ -277,6 +307,7 @@ DONE
         }
     }
   }
+
 }
 
 
