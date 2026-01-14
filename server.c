@@ -128,7 +128,8 @@ int matchmake() {
           send(players[j].fd, msg2, strlen(msg2), 0);
 
 
-          //send(players[i].fd, "YOUR_TURN\n", 10, 0);
+          send(players[i].fd, "YOUR_TURN\n", 10, 0);
+          send(players[j].fd, "NOTTURN\n", 10, 0);
 
 
 
@@ -225,6 +226,17 @@ DONE
         for(int ir = 0; ir < 10; ir++) {
             m->player2.board[ir] = m->player1.board[ir];
         }
+        if(winnerdinner(m->player2.board, player_piece)==1) {
+          send(m->player2.fd, "LOSE\n", 4,0);
+          send(m->player1.fd, "WIN\n", 4,0);
+          break;
+        }
+        if(player_piece=='X') {
+          player_piece=='O';
+        }
+        else {
+          player_piece = 'X';
+        }
       }
       else {
         send(m->player2.fd, "YOUR_TURN\n", 10, 0);
@@ -236,6 +248,17 @@ DONE
         }
         for(int ir = 0; ir < 10; ir++) {
             m->player1.board[ir] = m->player2.board[ir];
+        }
+        if(winnerdinner(m->player1.board, player_piece)==1) {
+          send(m->player2.fd, "WIN\n", 4,0);
+          send(m->player1.fd, "LOSE\n", 4,0);
+          break;
+        }
+        if(player_piece=='X') {
+          player_piece=='O';
+        }
+        else {
+          player_piece = 'X';
         }
     }
   }

@@ -72,7 +72,9 @@ void readinput(char *msg) {
       board[i] = ' ';
     }
     printtheboard();
+    if(pieceType=='X') {
       prompt();
+    } //tell one to go first
 
   }
   else if(!strncmp(msg, "YOUR_TURN", 9)) {
@@ -93,7 +95,7 @@ void readinput(char *msg) {
     printf("You win!\nSending back to pool...\n");
     printtheboard();
   }
-  else {
+  else if(!strncmp(msg, "LOSE", 4)){
     printf("You lost, sending back to pool...");
     printtheboard();
   }
