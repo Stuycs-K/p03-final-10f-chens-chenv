@@ -121,48 +121,33 @@ void matchmake() {
     return;
   }
 
+  players[player1].searching = 0;
+  players[player2].searching = 0;
 
-  for(int i = 0; i < num_players; i++) {
-    if(players[i].searching == 1) {
-      for(int j = i + 1; j < num_players; j++) {
-        if(players[j].searching == 1) {
+  struct Match new_match;
+  new_match.id = num_matches + 1;
+  new_match.player1 = players[player1];
+  new_match.player2 = players[player2];
+  memset(new_match.board, ' ', sizeof(new_match.board));
+  new_match.turn = 1;
+  new_match.end = 0;
 
-          //maybe add pritn statemnet for match found, who vs who
-          //handle matchcount
-          players[i].searching = 0;
-          players[j].searching = 0;
+  matches[num_matches] = new_match;
+  num_matches++;
 
-          struct Match new_match;
-          new_match.id = num_matches + 1;
-          new_match.player1 = players[i];
-          new_match.player2 = players[j];
-          memset(new_match.board, ' ', sizeof(new_match.board));
-          new_match.turn = 1;
-          new_match.end = 0;
+  char msg1[BUFFER_SIZE];
+  char msg2[BUFFER_SIZE];
+  snprintf(msg1, sizeof(msg1), "MATCH %s X\n", players[player2].username);
+  snprintf(msg2, sizeof(msg2), "MATCH %s O\n", players[player1].username);
 
-          matches[num_matches] = new_match;
-          num_matches++;
+  send(players[player1].fd, msg1, strlen(msg1), 0);
+  send(players[player2].fd, msg2, strlen(msg2), 0);
 
-          //notify players
-          char msg1[BUFFER_SIZE+9];
-          char msg2[BUFFER_SIZE+9];
-          snprintf(msg1, sizeof(msg1), "MATCH %s X\n", players[j].username);
-          snprintf(msg2, sizeof(msg2), "MATCH %s O\n", players[i].username);
+  send_board(&matches[num_matches - 1]);
 
-          send(players[i].fd, msg1, strlen(msg1), 0);
-          send(players[j].fd, msg2, strlen(msg2), 0);
+  send(players[player1].fd, "YOUR_TURN\n", 10, 0);
+  send(players[player2].fd, "NOTTURN\n", 8, 0);
 
-
-          send(players[i].fd, "YOUR_TURN\n", 10, 0);
-          send(players[j].fd, "NOTTURN\n", 10, 0);
-
-
-
-          return;
-        }
-      }
-    }
-  }
 }
 
 int find_match(int fd) {
