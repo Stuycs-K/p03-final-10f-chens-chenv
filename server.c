@@ -272,14 +272,13 @@ DONE
   //       }
   //   }
 
-    struct Match *m = &matches[matidx];
-    char player_piece;
-    if (m->player1.fd == i) {
-        player_piece = 'X';
-    }
-    else {
-        player_piece = 'O';
-    }
+    // char player_piece;
+    // if (m->player1.fd == i) {
+    //     player_piece = 'X';
+    // }
+    // else {
+    //     player_piece = 'O';
+    // }
 
     //check if its players turn
     /*
@@ -288,10 +287,35 @@ DONE
     ***
     */
 
-    if((m->turn == 1 && player_piece != 'X') || (m->turn == 2 && player_piece != 'O')) {
-        send(i, "NOTTURN\n", 8, 0);
-        return;
+    int player1 = (m->player1.fd == i);
+    if ((m->turn != 1 && player1) || (m->turn != 2 && !player1)) {
+      send(i, "NOTTURN\n", 8, 0);
+      return;
     }
+
+    char piece;
+
+    if (player1) {
+      piece = 'X';
+    }
+    else {
+      piece = 'O';
+    }
+
+    send_board(m);
+
+    if(winnerdinner(m->board, piece) == 1) {
+      if (player1) {
+        end_match(m, 1);
+      }
+      else {
+        end_match(m, 2);
+      }
+      return;
+    }
+   
+
+
     while(1) {
       char buff[256] = "-1";
       char buff2[256]="-1";
