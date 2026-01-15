@@ -23,10 +23,9 @@ void prompt() {
   char whichSpot[256];
   int spot;
   while(1) {
-    if(username[strlen(username)-1]=='\n') {
-      username[strlen(username)-1] = '\0';
-
-    }
+    // if(username[strlen(username)-1]=='\n') {
+    //   username[strlen(username)-1] = '\0';
+    // }
     printf("Where do you want to place your %c, %s?\n", pieceType, username);
     printf("[enter number from 1-9, numbered clockwise starting from top left]\n");
     if(!fgets(whichSpot,255,stdin)) {
@@ -48,7 +47,7 @@ void prompt() {
 
     break;
   }
-  board[spot] = pieceType;
+  //board[spot] = pieceType;
   char msg[64];
   sprintf(msg, "MOVE %d\n", spot);
   send(server_socket, msg, strlen(msg), 0);
@@ -73,9 +72,12 @@ void readinput(char *msg) {
     }
     printtheboard();
     if(pieceType=='X') {
-      prompt();
-    } //tell one to go first
-
+      printf("You go first!\n");
+      //prompt();
+    }
+    else {
+      printf("Waiting for opponent's move...\n");
+    }
   }
   else if(!strncmp(msg, "YOUR_TURN", 9)) {
     printtheboard();
@@ -90,7 +92,15 @@ void readinput(char *msg) {
     printf("Waiting for your turn...\n"); //find a way to tell user to not send smth
     //if they send it outside their turn
   }
-
+  else if(!strncmp(msg, "BOARD", 5)) {
+    char b1,b2,b3,b4,b5,b6,b7,b8,b9;
+    sscanf(msg, "BOARD %c%c%c%c%c%c%c%c%c", &b1,&b2,&b3,&b4,&b5,&b6,&b7,&b8,&b9);
+    board[1]=b1; board[2]=b2; board[3]=b3;
+    board[4]=b4; board[5]=b5; board[6]=b6;
+    board[7]=b7; board[8]=b8; board[9]=b9;
+    printf("Board updated:\n");
+    printtheboard();
+  }
   else if(!strncmp(msg, "WIN", 3)) {
     printf("You win!\nSending back to pool...\n");
     printtheboard();
@@ -103,7 +113,17 @@ void readinput(char *msg) {
     printf("You drawed, sending back to pool...");
     printtheboard();
   }
-  // add case for draw and opponent leaving
+  else if(!strncmp(msg, "USERNAME_TAKEN", 15)){
+    printf("Username already taken, please restart and enter a different username.\n");
+    exit(0);
+  }
+  else if(!strncmp(msg, "SERVER_FULL", 11)){
+    printf("Server is full, please try again later.\n");
+    exit(0);
+  }
+  else if(!strncmp(msg, "OPPONENT_DISCONNECTED", 20)){
+    printf("Your opponent has disconnected. You are being sent back to the pool.\n");
+  }
 }
 
 void clientLogic(int server_socket){

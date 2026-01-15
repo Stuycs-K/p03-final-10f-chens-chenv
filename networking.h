@@ -26,7 +26,7 @@ int server_tcp_handshake(int listen_socket);
 
 struct Player {
 
-  char board[10]; //space, X, or O.
+  //char board[10]; //space, X, or O.
   char username[BUFFER_SIZE];
   int wins;
   int losses;
