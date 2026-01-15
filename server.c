@@ -95,7 +95,7 @@ void add_player(char* username, int fd) {
   }
 }
 
-int matchmake() {
+void matchmake() {
 
   for(int i = 0; i < num_players; i++) {
     if(players[i].searching == 1) {
@@ -119,8 +119,8 @@ int matchmake() {
           num_matches++;
 
           //notify players
-          char msg1[BUFFER_SIZE];
-          char msg2[BUFFER_SIZE];
+          char msg1[BUFFER_SIZE+9];
+          char msg2[BUFFER_SIZE+9];
           snprintf(msg1, sizeof(msg1), "MATCH %s X\n", players[j].username);
           snprintf(msg2, sizeof(msg2), "MATCH %s O\n", players[i].username);
 
@@ -128,15 +128,46 @@ int matchmake() {
           send(players[j].fd, msg2, strlen(msg2), 0);
 
 
-          //send(players[i].fd, "YOUR_TURN\n", 10, 0);
+          send(players[i].fd, "YOUR_TURN\n", 10, 0);
+          send(players[j].fd, "NOTTURN\n", 10, 0);
 
 
 
-          return num_matches-1;
+          return;
         }
       }
     }
   }
+}
+int find_match(int fd) {
+  for(int i = 0; i < num_matches; i++) {
+    if(matches[i].id == fd) {
+      return i;
+    }
+  }
+  return -1;
+}
+void remove_match(int fd) {
+
+  int i = find_match(fd);
+  if(i == -1) {
+    return;
+  }
+
+  printf("Match #%d, between %s and %s, has ended.\n", matches[i].id,
+    (matches[i].player1).username,
+    (matches[i].player2).username);
+
+  //add checking if player is in a match, add handling to client
+
+  for(int j = i; j < num_matches - 1; j++) {
+    matches[j] = matches[j + 1];
+  }
+  num_matches--;
+  if (num_matches >= 0) {
+    matches[num_matches] = (struct Match) {0};
+  }
+  print_leaderboard();
 }
 
 //game_move
@@ -159,9 +190,14 @@ int winnerdinner(char board[10], char piece) {
     }; //rows, then  cols diags.
     for(int i=0;i<8;i++){
         if(board[wins[i][0]]==piece && board[wins[i][1]]==piece && board[wins[i][2]]==piece)
-            return 1;
+            return 1; //win
     }
-    return 0;
+    for(int i = 1; i < 10; i++) {
+      if(board[i]==' ') {
+        return 0; //has a space
+      }
+    }
+    return 2; //draw
 }
 
 void game_move(int i, int spot) {
@@ -225,6 +261,22 @@ DONE
         for(int ir = 0; ir < 10; ir++) {
             m->player2.board[ir] = m->player1.board[ir];
         }
+        if(winnerdinner(m->player2.board, player_piece)==1) {
+          send(m->player2.fd, "LOSE\n", 5,0);
+          send(m->player1.fd, "WIN\n", 4,0);
+          break;
+        }
+        else if(winnerdinner(m->player2.board, player_piece)==1) {
+                  send(m->player2.fd, "DRAW\n", 5,0);
+                  send(m->player1.fd, "DRAW\n", 5,0);
+                  break;
+                }
+        if(player_piece=='X') {
+          player_piece='O';
+        }
+        else {
+          player_piece = 'X';
+        }
       }
       else {
         send(m->player2.fd, "YOUR_TURN\n", 10, 0);
@@ -237,8 +289,26 @@ DONE
         for(int ir = 0; ir < 10; ir++) {
             m->player1.board[ir] = m->player2.board[ir];
         }
+        if(winnerdinner(m->player1.board, player_piece)==1) {
+          send(m->player2.fd, "WIN\n", 4,0);
+          send(m->player1.fd, "LOSE\n", 5,0);
+          break;
+        }
+        else if(winnerdinner(m->player2.board, player_piece)==1) {
+                  send(m->player2.fd, "DRAW\n", 5,0);
+                  send(m->player1.fd, "DRAW\n", 5,0);
+                  break;
+                }
+        if(player_piece=='X') {
+          player_piece='O';
+        }
+        else {
+          player_piece = 'X';
+        }
     }
   }
+  remove_match(m->id); //check?
+
 }
 
 
@@ -279,7 +349,7 @@ int main(int argc, char *argv[] ) {
             remove_player(i);
             close(i);
             FD_CLR(i, &read_fds1);
-            matchmake();
+            // matchmake();
 
           }
           else {
@@ -294,13 +364,12 @@ int main(int argc, char *argv[] ) {
               matchmake();
             }
             else {
-
               if (strncmp(buffer, "MOVE", 4) == 0) {
                 int spot;
                 if (sscanf(buffer + 5, "%d", &spot) == 1) {
-                  //game_move(i, spot, r);
-                  int r = matchmake();
-                }
+                  game_move(i, spot);
+                  matchmake();
+                  }
               }
             }
           }

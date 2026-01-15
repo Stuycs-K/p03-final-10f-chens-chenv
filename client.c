@@ -72,7 +72,9 @@ void readinput(char *msg) {
       board[i] = ' ';
     }
     printtheboard();
+    if(pieceType=='X') {
       prompt();
+    } //tell one to go first
 
   }
   else if(!strncmp(msg, "YOUR_TURN", 9)) {
@@ -85,16 +87,20 @@ void readinput(char *msg) {
     prompt();
   }
   else if(!strncmp(msg, "NOTTURN", 7)) {
-    printf("HEY! It's not your turn. Be patient!\n");
-    printtheboard();
+    printf("Waiting for your turn...\n"); //find a way to tell user to not send smth
+    //if they send it outside their turn
   }
 
   else if(!strncmp(msg, "WIN", 3)) {
     printf("You win!\nSending back to pool...\n");
     printtheboard();
   }
-  else {
+  else if(!strncmp(msg, "LOSE", 4)){
     printf("You lost, sending back to pool...");
+    printtheboard();
+  }
+  else if(!strncmp(msg, "DRAW", 4)){
+    printf("You drawed, sending back to pool...");
     printtheboard();
   }
   // add case for draw and opponent leaving
