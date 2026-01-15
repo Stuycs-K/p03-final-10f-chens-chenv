@@ -134,7 +134,11 @@ void clientLogic(int server_socket){
     exit(0);
     return;
   }
-  username[strlen(username)] = '\0';
+
+  if(username[strlen(username)-1]=='\n') {
+    username[strlen(username)-1] = '\0';
+  }
+  
   send(server_socket, username, strlen(username), 0);
   while(1) {
     int k = recv(server_socket, buffer, sizeof(buffer)-1, 0);
