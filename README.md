@@ -5,15 +5,18 @@
 
 Vincent Chen & Serena Chen
 
+Recording link: [add once recorded]
+
 ### Project Description:
 
 This project seeks to implement tic-tac-toe using a ranked leaderboard and tracking game mechanics by using the following concepts:
-- Allocating memory (refine)
-- Working with files (refine)
+- Allocating memory
+- Processes
+- Working with files
 - Signals
 - Sockets
 
-It's fun to play!
+Multiple clients can connect to a central server over TCP sockets, enter a matchmaking pool, and be paired into head-to-head games. The server maintains game state, enforces turn order, and tracks player statistics such as wins/losses in a ranked leaderboard. It's fun to play!
 
 ### Instructions:
 
@@ -23,5 +26,4 @@ The user interacts with this program by typing in a number from 1-9 inclusive to
 
 ### Resources/ References:
 
-list here(CHANGE THIS!!!!!)
 (none currently)
