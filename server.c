@@ -414,7 +414,7 @@ int main(int argc, char *argv[] ) {
                 int spot;
                 if (sscanf(buffer + 5, "%d", &spot) == 1) {
                   game_move(i, spot);
-                  matchmake();
+                  //matchmake();
                 }
               }
             }
