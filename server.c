@@ -74,25 +74,32 @@ void remove_player(int fd) {
 void add_player(char* username, int fd) {
 
   //check if username alr exists
+  for(int i = 0; i < num_players; i++) {
+    if(strcmp(players[i].username, username) == 0) {
+      send(fd, "USERNAME_TAKEN\n", 15, 0);
+      return;
+    }
+  }
 
   if (num_players >= MAX_PLAYERS) {
     printf("Max players reached, cannot add more players.\n");
     return;
   }
-  else {
-    struct Player new_player;
-    strncpy(new_player.username, username, BUFFER_SIZE);
-    new_player.wins = 0;
-    new_player.losses = 0;
-    new_player.ranking = num_players + 1;
-    new_player.searching = 1;
-    new_player.fd = fd;
+ 
+  struct Player new_player;
+  strncpy(new_player.username, username, sizeof(new_player.username) - 1);
+  new_player.username[sizeof(new_player.username) - 1] = '\0';
+  new_player.wins = 0;
+  new_player.losses = 0;
+  new_player.ranking = num_players + 1;
+  new_player.searching = 1;
+  new_player.fd = fd;
 
-    players[num_players] = new_player;
-    num_players++;
-    printf("%s has joined.\n", username);
-    print_leaderboard();
-  }
+  players[num_players] = new_player;
+  num_players++;
+  printf("%s has joined.\n", username);
+  print_leaderboard();
+  
 }
 
 void matchmake() {
