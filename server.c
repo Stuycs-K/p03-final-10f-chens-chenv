@@ -170,27 +170,25 @@ void send_board(struct Match* match) {
   send(match->player2.fd, board_msg, strlen(board_msg), 0);
 }
 
-void remove_match(int fd) {
+void remove_match(int id) {
 
-  int i = find_match(fd);
-  if(i == -1) {
+  if(id == -1) {
     return;
   }
 
-  printf("Match #%d, between %s and %s, has ended.\n", matches[i].id,
-    (matches[i].player1).username,
-    (matches[i].player2).username);
-
+  printf("Match #%d, between %s and %s, has ended.\n", matches[id].id,
+    (matches[id].player1).username,
+    (matches[id].player2).username);
   //add checking if player is in a match, add handling to client
 
-  for(int j = i; j < num_matches - 1; j++) {
+  for(int j = id; j < num_matches - 1; j++) {
     matches[j] = matches[j + 1];
   }
   num_matches--;
   if (num_matches >= 0) {
     matches[num_matches] = (struct Match) {0};
   }
-  print_leaderboard();
+  //print_leaderboard();
 }
 
 void end_match(struct Match* match, int winner) {
