@@ -25,6 +25,17 @@ void print_leaderboard() {
   printf("_______________________________\n");
 }
 
+void send_board(struct Match* match) {
+  char board_msg[BUFFER_SIZE];
+  snprintf(board_msg, sizeof(board_msg), "BOARD %c%c%c%c%c%c%c%c%c\n",
+    match->board[1], match->board[2], match->board[3],
+    match->board[4], match->board[5], match->board[6],
+    match->board[7], match->board[8], match->board[9]);
+
+  send(match->player1.fd, board_msg, strlen(board_msg), 0);
+  send(match->player2.fd, board_msg, strlen(board_msg), 0);
+}
+
 void update_stats(char* username, int win) {
 
   for(int i = 0; i < num_players; i++) {
@@ -60,6 +71,28 @@ void remove_player(int fd) {
   printf("%s has left.\n", players[i].username);
 
   //add checking if player is in a match, add handling to client
+  int match_idx = find_match(fd);
+  if (match_idx != -1) {
+    struct Match* m = &matches[match_idx];
+    if(!m->end) {
+      int other;
+      if(m->player1.fd == fd) {
+        other = m->player2.fd;
+      }
+      else {
+        other = m->player1.fd;
+      }
+
+      send(other, "OPPONENT_DISCONNECTED\n", 22, 0);
+      send(other, "POOL_WAIT\n", 10, 0);
+
+      int other_idx = find_player(other);
+      if (other_idx != -1) {
+        players[other_idx].searching = 1;
+      }
+      
+      remove_match(match_idx);
+    }
 
   for(int j = i; j < num_players - 1; j++) {
     players[j] = players[j + 1];
@@ -73,10 +106,15 @@ void remove_player(int fd) {
 
 void add_player(char* username, int fd) {
 
+  if(username[strlen(username)-1]=='\n') {
+    username[strlen(username)-1] = '\0';
+  }
+
   //check if username alr exists
   for(int i = 0; i < num_players; i++) {
     if(strcmp(players[i].username, username) == 0) {
       send(fd, "USERNAME_TAKEN\n", 15, 0);
+      close(fd);
       return;
     }
   }
@@ -166,16 +204,7 @@ int find_match(int fd) {
   return -1;
 }
 
-void send_board(struct Match* match) {
-  char board_msg[BUFFER_SIZE];
-  snprintf(board_msg, sizeof(board_msg), "BOARD %c%c%c%c%c%c%c%c%c\n",
-    match->board[1], match->board[2], match->board[3],
-    match->board[4], match->board[5], match->board[6],
-    match->board[7], match->board[8], match->board[9]);
 
-  send(match->player1.fd, board_msg, strlen(board_msg), 0);
-  send(match->player2.fd, board_msg, strlen(board_msg), 0);
-}
 
 void remove_match(int id) {
 
@@ -222,7 +251,7 @@ void end_match(struct Match* match, int winner) {
   send(match->player2.fd, "POOL_WAIT\n", 10, 0);
 
   for(int i = 0; i < num_players; i++) {
-    if(strcmp(players[i].username, match->player1.username) == 0 ||strcmp(players[i].username, match->player2.username) == 0) {
+    if(players[i].fd == match->player1.fd || players[i].fd == match->player2.fd) {
       players[i].searching = 1;
     }
   }
@@ -317,6 +346,7 @@ DONE
       piece = 'O';
     }
 
+    m->board[spot] = piece;
     send_board(m);
 
     if(winnerdinner(m->board, piece) == 1) {
