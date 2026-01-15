@@ -73,7 +73,7 @@ void readinput(char *msg) {
     printtheboard();
     if(pieceType=='X') {
       printf("You go first!\n");
-      //prompt();
+      prompt();
     }
     else {
       printf("Waiting for opponent's move...\n");
@@ -113,7 +113,7 @@ void readinput(char *msg) {
     printf("You drawed, sending back to pool...");
     printtheboard();
   }
-  else if(!strncmp(msg, "USERNAME_TAKEN", 15)){
+  else if(!strncmp(msg, "USERNAME_TAKEN", 14)){
     printf("Username already taken, please restart and enter a different username.\n");
     exit(0);
   }
@@ -138,7 +138,7 @@ void clientLogic(int server_socket){
   if(username[strlen(username)-1]=='\n') {
     username[strlen(username)-1] = '\0';
   }
-  
+
   send(server_socket, username, strlen(username), 0);
   while(1) {
     int k = recv(server_socket, buffer, sizeof(buffer)-1, 0);

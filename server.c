@@ -61,6 +61,36 @@ int find_player(int fd) {
   return -1;
 }
 
+int find_match(int fd) {
+  for(int i = 0; i < num_matches; i++) {
+    if(matches[i].player1.fd == fd || matches[i].player2.fd == fd) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+void remove_match(int id) {
+
+  if(id == -1) {
+    return;
+  }
+
+  printf("Match #%d, between %s and %s, has ended.\n", matches[id].id,
+    (matches[id].player1).username,
+    (matches[id].player2).username);
+  //add checking if player is in a match, add handling to client
+
+  for(int j = id; j < num_matches - 1; j++) {
+    matches[j] = matches[j + 1];
+  }
+  num_matches--;
+  if (num_matches >= 0) {
+    matches[num_matches] = (struct Match) {0};
+  }
+  //print_leaderboard();
+}
+
 void remove_player(int fd) {
 
   int i = find_player(fd);
@@ -93,6 +123,7 @@ void remove_player(int fd) {
       
       remove_match(match_idx);
     }
+  }
 
   for(int j = i; j < num_players - 1; j++) {
     players[j] = players[j + 1];
@@ -110,6 +141,8 @@ void add_player(char* username, int fd) {
     username[strlen(username)-1] = '\0';
   }
 
+  //check if username is too long
+
   //check if username alr exists
   for(int i = 0; i < num_players; i++) {
     if(strcmp(players[i].username, username) == 0) {
@@ -121,6 +154,7 @@ void add_player(char* username, int fd) {
 
   if (num_players >= MAX_PLAYERS) {
     printf("Max players reached, cannot add more players.\n");
+    send(fd, "SERVER_FULL\n", 12, 0);
     return;
   }
  
@@ -191,41 +225,12 @@ void matchmake() {
   send_board(&matches[num_matches - 1]);
 
   send(players[player1].fd, "YOUR_TURN\n", 10, 0);
-  send(players[player2].fd, "NOTTURN\n", 8, 0);
+  //send(players[player2].fd, "NOTTURN\n", 8, 0);
 
 }
 
-int find_match(int fd) {
-  for(int i = 0; i < num_matches; i++) {
-    if(matches[i].player1.fd == fd || matches[i].player2.fd == fd) {
-      return i;
-    }
-  }
-  return -1;
-}
 
 
-
-void remove_match(int id) {
-
-  if(id == -1) {
-    return;
-  }
-
-  printf("Match #%d, between %s and %s, has ended.\n", matches[id].id,
-    (matches[id].player1).username,
-    (matches[id].player2).username);
-  //add checking if player is in a match, add handling to client
-
-  for(int j = id; j < num_matches - 1; j++) {
-    matches[j] = matches[j + 1];
-  }
-  num_matches--;
-  if (num_matches >= 0) {
-    matches[num_matches] = (struct Match) {0};
-  }
-  //print_leaderboard();
-}
 
 void end_match(struct Match* match, int winner) {
   match->end = 1;
@@ -375,11 +380,11 @@ DONE
 
     if(m->turn == 1) {
       send(m->player1.fd, "YOUR_TURN\n", 10, 0);
-      send(m->player2.fd, "NOTTURN\n", 8, 0);
+      //send(m->player2.fd, "NOTTURN\n", 8, 0);
     }
     else {
       send(m->player2.fd, "YOUR_TURN\n", 10, 0);
-      send(m->player1.fd, "NOTTURN\n", 8, 0);
+      //send(m->player1.fd, "NOTTURN\n", 8, 0);
     }
    
 
@@ -475,7 +480,9 @@ int main(int argc, char *argv[] ) {
 
         if (i == listen_socket) {
           int client_socket = server_tcp_handshake(listen_socket);
-          if (client_socket < 0) continue;
+          if (client_socket < 0) {
+            continue;
+          }
 
           FD_SET(client_socket, &read_fds1);
           if (client_socket > max) {
@@ -493,7 +500,7 @@ int main(int argc, char *argv[] ) {
             remove_player(i);
             close(i);
             FD_CLR(i, &read_fds1);
-            // matchmake();
+            matchmake();
 
           }
           else {
@@ -502,7 +509,7 @@ int main(int argc, char *argv[] ) {
             int index = find_player(i);
 
             if(index < 0) {
-              buffer[strlen(buffer) - 1] = '\0';
+              //buffer[strlen(buffer) - 1] = '\0';
               add_player(buffer, i);
               send(i, "POOL_WAIT\n", 10, 0);
               matchmake();
@@ -513,7 +520,7 @@ int main(int argc, char *argv[] ) {
                 if (sscanf(buffer + 5, "%d", &spot) == 1) {
                   game_move(i, spot);
                   matchmake();
-                  }
+                }
               }
             }
           }
