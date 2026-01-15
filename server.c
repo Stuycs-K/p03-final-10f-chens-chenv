@@ -251,17 +251,26 @@ void game_move(int i, int spot) {
 DONE
 ***
 */
-  int matidx = -1;
-  int playidx = find_player(i);
-  if(playidx==-1) {
+  int matidx = find_match(i);
+  if(matidx == -1) {
     return;
   }
-  for(int i=0;i<num_matches;i++){
-        if((matches[i].player1.fd == i || matches[i].player2.fd == i) && !matches[i].end){
-            matidx = i;
-            break;
-        }
-    }
+
+  struct Match *m = &matches[matidx];
+
+  if(m->end) {
+    return;
+  }
+  // int playidx = find_player(i);
+  // if(playidx==-1) {
+  //   return;
+  // }
+  // for(int i=0;i<num_matches;i++){
+  //       if((matches[i].player1.fd == i || matches[i].player2.fd == i) && !matches[i].end){
+  //           matidx = i;
+  //           break;
+  //       }
+  //   }
 
     struct Match *m = &matches[matidx];
     char player_piece;
