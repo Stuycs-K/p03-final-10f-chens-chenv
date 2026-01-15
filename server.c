@@ -79,7 +79,6 @@ void remove_match(int id) {
   printf("Match #%d, between %s and %s, has ended.\n", matches[id].id,
     (matches[id].player1).username,
     (matches[id].player2).username);
-  //add checking if player is in a match, add handling to client
 
   for(int j = id; j < num_matches - 1; j++) {
     matches[j] = matches[j + 1];
@@ -100,7 +99,6 @@ void remove_player(int fd) {
 
   printf("%s has left.\n", players[i].username);
 
-  //add checking if player is in a match, add handling to client
   int match_idx = find_match(fd);
   if (match_idx != -1) {
     struct Match* m = &matches[match_idx];
@@ -143,7 +141,6 @@ void add_player(char* username, int fd) {
 
   //check if username is too long
 
-  //check if username alr exists
   for(int i = 0; i < num_players; i++) {
     if(strcmp(players[i].username, username) == 0) {
       send(fd, "USERNAME_TAKEN\n", 15, 0);
@@ -281,8 +278,9 @@ int winnerdinner(char board[10], char piece) {
         {1,2,3},{4,5,6},{7,8,9},{1,4,7},{2,5,8},{3,6,9},{1,5,9},{3,5,7}
     }; //rows, then  cols diags.
     for(int i=0;i<8;i++){
-        if(board[wins[i][0]]==piece && board[wins[i][1]]==piece && board[wins[i][2]]==piece)
-            return 1; //win
+      if(board[wins[i][0]]==piece && board[wins[i][1]]==piece && board[wins[i][2]]==piece) {
+        return 1;
+      }
     }
     for(int i = 1; i < 10; i++) {
       if(board[i]==' ') {
@@ -294,12 +292,6 @@ int winnerdinner(char board[10], char piece) {
 
 void game_move(int i, int spot) {
 
-// find match player is in
-/*
-***
-DONE
-***
-*/
   int matidx = find_match(i);
   if(matidx == -1) {
     return;
@@ -310,154 +302,57 @@ DONE
   if(m->end) {
     return;
   }
-  // int playidx = find_player(i);
-  // if(playidx==-1) {
-  //   return;
-  // }
-  // for(int i=0;i<num_matches;i++){
-  //       if((matches[i].player1.fd == i || matches[i].player2.fd == i) && !matches[i].end){
-  //           matidx = i;
-  //           break;
-  //       }
-  //   }
 
-    // char player_piece;
-    // if (m->player1.fd == i) {
-    //     player_piece = 'X';
-    // }
-    // else {
-    //     player_piece = 'O';
-    // }
+  int player1 = (m->player1.fd == i);
+  if ((m->turn != 1 && player1) || (m->turn != 2 && !player1)) {
+    send(i, "NOTTURN\n", 8, 0);
+    return;
+  }
 
-    //check if its players turn
-    /*
-    ***
-    DONE
-    ***
-    */
+  char piece;
 
-    int player1 = (m->player1.fd == i);
-    if ((m->turn != 1 && player1) || (m->turn != 2 && !player1)) {
-      send(i, "NOTTURN\n", 8, 0);
-      return;
-    }
+  if (player1) {
+    piece = 'X';
+  }
+  else {
+    piece = 'O';
+  }
 
-    char piece;
+  m->board[spot] = piece;
+  send_board(m);
 
+  if(winnerdinner(m->board, piece) == 1) {
     if (player1) {
-      piece = 'X';
+      end_match(m, 1);
     }
     else {
-      piece = 'O';
+      end_match(m, 2);
     }
+    remove_match(matidx);
+    return;
+  }
 
-    m->board[spot] = piece;
-    send_board(m);
+  if (winnerdinner(m->board, piece) == 2) {
+    end_match(m, 0);
+    remove_match(matidx);
+    return;
+  }
 
-    if(winnerdinner(m->board, piece) == 1) {
-      if (player1) {
-        end_match(m, 1);
-      }
-      else {
-        end_match(m, 2);
-      }
-      remove_match(matidx);
-      return;
-    }
+  if(m->turn == 1) {
+    m->turn = 2;
+  }
+  else {
+    m->turn = 1;
+  }
 
-    if (winnerdinner(m->board, piece) == 2) {
-      end_match(m, 0);
-      remove_match(matidx);
-      return;
-    }
-
-    if(m->turn == 1) {
-      m->turn = 2;
-    }
-    else {
-      m->turn = 1;
-    }
-
-    if(m->turn == 1) {
-      send(m->player1.fd, "YOUR_TURN\n", 10, 0);
-      //send(m->player2.fd, "NOTTURN\n", 8, 0);
-    }
-    else {
-      send(m->player2.fd, "YOUR_TURN\n", 10, 0);
-      //send(m->player1.fd, "NOTTURN\n", 8, 0);
-    }
-   
-
-
-  //   while(1) {
-  //     char buff[256] = "-1";
-  //     char buff2[256]="-1";
-  //     int idx;
-  //     if(m->turn == 1) {
-  //       idx = 0;
-  //     }
-  //     else{
-  //       idx = 1;
-  //     }
-  //     if(idx%2==0) {
-  //       send(m->player1.fd, "YOUR_TURN\n", 10, 0);
-  //       recv(m->player1.fd, buff, 7, 0);
-  //       strncpy(buff2,buff,4);
-  //       buff2[4]='\0';
-  //       if(strcmp(buff, "MOVE")==0) {
-  //           m->turn = 2;
-  //       }
-  //       for(int ir = 0; ir < 10; ir++) {
-  //           m->player2.board[ir] = m->player1.board[ir];
-  //       }
-  //       if(winnerdinner(m->player2.board, player_piece)==1) {
-  //         send(m->player2.fd, "LOSE\n", 5,0);
-  //         send(m->player1.fd, "WIN\n", 4,0);
-  //         break;
-  //       }
-  //       else if(winnerdinner(m->player2.board, player_piece)==1) {
-  //                 send(m->player2.fd, "DRAW\n", 5,0);
-  //                 send(m->player1.fd, "DRAW\n", 5,0);
-  //                 break;
-  //               }
-  //       if(player_piece=='X') {
-  //         player_piece='O';
-  //       }
-  //       else {
-  //         player_piece = 'X';
-  //       }
-  //     }
-  //     else {
-  //       send(m->player2.fd, "YOUR_TURN\n", 10, 0);
-  //       recv(m->player2.fd, buff, 7, 0);
-  //       strncpy(buff2,buff,4);
-  //       buff2[4]='\0';
-  //       if(strcmp(buff, "MOVE")==0) {
-  //           m->turn = 1;
-  //       }
-  //       for(int ir = 0; ir < 10; ir++) {
-  //           m->player1.board[ir] = m->player2.board[ir];
-  //       }
-  //       if(winnerdinner(m->player1.board, player_piece)==1) {
-  //         send(m->player2.fd, "WIN\n", 4,0);
-  //         send(m->player1.fd, "LOSE\n", 5,0);
-  //         break;
-  //       }
-  //       else if(winnerdinner(m->player2.board, player_piece)==1) {
-  //                 send(m->player2.fd, "DRAW\n", 5,0);
-  //                 send(m->player1.fd, "DRAW\n", 5,0);
-  //                 break;
-  //               }
-  //       if(player_piece=='X') {
-  //         player_piece='O';
-  //       }
-  //       else {
-  //         player_piece = 'X';
-  //       }
-  //   }
-  // }
-  // remove_match(m->id); //check?
-
+  if(m->turn == 1) {
+    send(m->player1.fd, "YOUR_TURN\n", 10, 0);
+    //send(m->player2.fd, "NOTTURN\n", 8, 0);
+  }
+  else {
+    send(m->player2.fd, "YOUR_TURN\n", 10, 0);
+    //send(m->player1.fd, "NOTTURN\n", 8, 0);
+  }
 }
 
 
@@ -524,7 +419,6 @@ int main(int argc, char *argv[] ) {
               }
             }
           }
-
         }
       }
     }
