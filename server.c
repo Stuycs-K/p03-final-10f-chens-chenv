@@ -97,6 +97,31 @@ void add_player(char* username, int fd) {
 
 void matchmake() {
 
+  int player1 = -1, player2 = -1;
+
+  for(int i = 0; i < num_players; i++) {
+    if(players[i].searching == 1) {
+      player1 = i;
+      break;
+    }
+  }
+
+  if (player1 == -1) {
+    return;
+  }
+
+  for(int i = player1 + 1; i < num_players; i++) {
+    if(players[i].searching == 1) {
+      player2 = i;
+      break;
+    }
+  }
+
+  if (player2 == -1) {
+    return;
+  }
+
+
   for(int i = 0; i < num_players; i++) {
     if(players[i].searching == 1) {
       for(int j = i + 1; j < num_players; j++) {
