@@ -139,14 +139,27 @@ void matchmake() {
     }
   }
 }
+
 int find_match(int fd) {
   for(int i = 0; i < num_matches; i++) {
-    if(matches[i].id == fd) {
+    if(matches[i].player1.fd == fd || matches[i].player2.fd == fd) {
       return i;
     }
   }
   return -1;
 }
+
+void send_board(struct Match* match) {
+  char board_msg[BUFFER_SIZE];
+  snprintf(board_msg, sizeof(board_msg), "BOARD %c%c%c%c%c%c%c%c%c\n",
+    match->board[1], match->board[2], match->board[3],
+    match->board[4], match->board[5], match->board[6],
+    match->board[7], match->board[8], match->board[9]);
+
+  send(match->player1.fd, board_msg, strlen(board_msg), 0);
+  send(match->player2.fd, board_msg, strlen(board_msg), 0);
+}
+
 void remove_match(int fd) {
 
   int i = find_match(fd);
