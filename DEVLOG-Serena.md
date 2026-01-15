@@ -22,3 +22,11 @@ Implemented player and match structs into server, including converting sending u
 
 ### 2025-01-11 - Matchmaking, convert to select, leaderboard working
 Converted from forking subservers into using select to handle multiple clients so leaderboard would update properly. Fixed main to include stuff from original subserver function when converting. Implemented matchmaking properly, is working. Leaderboard is also working. ~1.5hrs
+
+### 2026-1-12 - Testing + buffer reading error
+Updated Vincent with the work I did over the weekend. Did some testing with current MVP, fix minor bugs such as makefile. There was also a buffer reading error when printing the username that I was trying to fix. Also discussed with Vincent how we would implement game_move. ~1.2 hrs
+
+### 2026-1-13 - game_move & matchmake fix
+Went over Vincent's implementation of game_move. Also tried fixing an error of prompting both players to play in matchmake. Unfinished and its kinda broken. ~1hr
+
+
