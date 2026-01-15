@@ -183,6 +183,36 @@ void remove_match(int fd) {
   print_leaderboard();
 }
 
+void end_match(struct Match* match, int winner) {
+  match->end = 1;
+
+  if (winner == 1) {
+    update_stats(match->player1.username, 1);
+    update_stats(match->player2.username, 0);
+    send(match->player1.fd, "WIN\n", 4, 0);
+    send(match->player2.fd, "LOSE\n", 5, 0);
+  }
+  else if (winner == 2) {
+    update_stats(match->player2.username, 1);
+    update_stats(match->player1.username, 0);
+    send(match->player2.fd, "WIN\n", 4, 0);
+    send(match->player1.fd, "LOSE\n", 5, 0);
+  }
+  else {
+    send(match->player1.fd, "DRAW\n", 5, 0);
+    send(match->player2.fd, "DRAW\n", 5, 0);
+  }
+
+  send(match->player1.fd, "POOL_WAIT\n", 10, 0);
+  send(match->player2.fd, "POOL_WAIT\n", 10, 0);
+
+  for(int i = 0; i < num_players; i++) {
+    if(strcmp(players[i].username, match->player1.username) == 0 ||strcmp(players[i].username, match->player2.username) == 0) {
+      players[i].searching = 1;
+    }
+  }
+}
+
 //game_move
 // check if valid move done
 // make move
