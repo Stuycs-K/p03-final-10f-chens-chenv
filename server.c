@@ -166,6 +166,7 @@ void add_player(char* username, int fd) {
 
   players[num_players] = new_player;
   num_players++;
+  send(fd, "THANKS\n", 7, 0);
   printf("%s has joined.\n", username);
   print_leaderboard();
   
@@ -408,11 +409,13 @@ int main(int argc, char *argv[] ) {
               add_player(buffer, i);
               send(i, "POOL_WAIT\n", 10, 0);
               matchmake();
+              //break;
             }
             else {
               if (strncmp(buffer, "MOVE", 4) == 0) {
                 int spot;
                 if (sscanf(buffer + 5, "%d", &spot) == 1) {
+                  printf("Player %s (fd %d) wants to move to spot %d\n", players[index].username, i, spot);
                   game_move(i, spot);
                   //matchmake();
                 }

@@ -140,14 +140,35 @@ void clientLogic(int server_socket){
   }
 
   send(server_socket, username, strlen(username), 0);
+  send(server_socket, "\n", 1, 0);
+
   while(1) {
     int k = recv(server_socket, buffer, sizeof(buffer)-1, 0);
     if(k <= 0) {
       exit(0);
     }
-    buffer[k] = '\0';
-    readinput(buffer);
+    if (buffer[k-1]=='\n') {
+      buffer[k-1]='\0';
+    } else {
+      buffer[k]='\0';
+    }
+
+    char *start = buffer;
+    int j = 0;
+
+    while(buffer[j]) {
+      if (buffer[j] == '\n') {
+        buffer[j] = '\0';
+        readinput(start);
+        start = &buffer[j + 1];
+      }
+      j++;
+    }
+    if (start < &buffer[j]) {
+      readinput(start);
+    }
   }
+
 }
 
 int main(int argc, char *argv[] ) {
