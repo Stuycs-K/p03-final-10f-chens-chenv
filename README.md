@@ -26,4 +26,7 @@ The user interacts with this program by typing in a number from 1-9 inclusive to
 
 ### Resources/ References:
 
-(none currently)
+- https://www.ibm.com/docs/en/zos/2.5.0?topic=calls-select
+- https://support.sas.com/documentation/onlinedoc/sasc/doc700/html/lr2/select.htm
+
+We used these links to check for new matches to be formed (every 2 seconds, the matchmake function is ran to pair people together). Insertion sort was used to sort the leaderboard, which dictates the matches that are formed.
