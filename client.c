@@ -147,11 +147,12 @@ void clientLogic(int server_socket){
     if(k <= 0) {
       exit(0);
     }
-    if (buffer[k-1]=='\n') {
-      buffer[k-1]='\0';
-    } else {
-      buffer[k]='\0';
-    }
+    // if (buffer[k-1]=='\n') {
+    //   buffer[k-1]='\0';
+    // } else {
+    //   buffer[k]='\0';
+    // }
+    buffer[k] = '\0';
 
     char *start = buffer;
     int j = 0;
