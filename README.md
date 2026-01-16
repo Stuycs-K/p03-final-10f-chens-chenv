@@ -5,7 +5,8 @@
 
 Vincent Chen & Serena Chen
 
-Recording link: [add once recorded]
+Recording link: 
+https://drive.google.com/file/d/1z4oNfizgSgBL3wVMF_Quz5g7IWFc7Zqc/view?usp=sharing
 
 ### Project Description:
 

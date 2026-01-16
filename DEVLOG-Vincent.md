@@ -26,9 +26,10 @@ added functions to tell users to move + checking wins/draws; also, updated readm
 completing TTT with no bugs; working on optimizing leaderboard for 1/14
 
 ### 2026-01-14 - completing TTT 2.0
-
+fixing bug with one player moving and other player stuck; also discussed working on leaderboard etc.
 
 ### 2026-01-15 - recording + additional work
-Completed script in-class and @ home, uploaded recording, updated README + final testing
+Completed script in-class and @ home, uploaded recording, updated README + final testing.
 
 ### 2026-01-16 - fixing formatting + checking for bugs
+testing in-class as well as in kitchen, removing any potential warnings or sources of error.
