@@ -13,14 +13,28 @@ static void sighandler(int signo) {
   }
 }
 
+void insertionsort(struct Player arr[], int n) {
+  for (int i = 1; i < n; i++) {
+    struct Player temp = arr[i];
+    int j = i - 1;
+
+    while (j >= 0 && (arr[j].wins < temp.wins || arr[j].wins == temp.wins && arr[j].losses > temp.losses)) {
+      arr[j + 1] = arr[j];
+      j--;
+    }
+    arr[j + 1] = temp;
+  }
+}
+
 void print_leaderboard() {
   printf("Leaderboard:\n");
   printf("Rank\tUsername\tWins\tLosses\n");
   //printing random players for now but need to sort (prob using merge sort or smth)
+  insertionsort(players, num_players);
   //can make this prettier
   //maybe change to only rpitn exisiting players if less htan 10 plaers
   for(int i = 0; i < 10; i++) {
-    printf("%d\t%s\t%d\t%d\n", i + 1, players[i].username, players[i].wins, players[i].losses);
+    printf("%d\t%s\t\t%d\t%d\n", i + 1, players[i].username, players[i].wins, players[i].losses);
   }
   printf("_______________________________\n");
 }
