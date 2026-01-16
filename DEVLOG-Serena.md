@@ -30,9 +30,9 @@ Updated Vincent with the work I did over the weekend. Did some testing with curr
 Went over Vincent's implementation of game_move. Also tried fixing an error of prompting both players to play in matchmake. Unfinished and its kinda broken. ~1hr
 
 ### 2026-1-14 - game_move & matchmake fix, handling
-Continued fixing game_move and matchmake. There was a logic issue in matchmake that was leading to the prompt printing for both players due to error in the for loop. I changed it so that now it searches for the 2 players seperately. I also added some handling for situations such as opponent disconnecting. A lot of time was spent debugging read newline errors, but that part's still kinda buggy. 
+Continued fixing game_move and matchmake. There was a logic issue in matchmake that was leading to the prompt printing for both players due to error in the for loop. I changed it so that now it searches for the 2 players seperately. I also added some handling for situations such as opponent disconnecting. A lot of time was spent debugging read newline errors, but that part's still kinda buggy. ~3hrs
 
-### 2026-1-15 - communication error fix
-Went through code to realize that some messages between servers were either not being interpreted or were just disappearing. Turns out it was an error with newline and null characters so the server was reading the input as one string and ignoring everything else, even though everything should be seperated by a newline. Fix that so now games are going back and forth correctly between players. 
+### 2026-1-15 - communication error fix, leaderboard sorting
+Went through code to realize that some messages between servers were either not being interpreted or were just disappearing. Turns out it was an error with newline and null characters so the server was reading the input as one string and ignoring everything else, even though everything should be seperated by a newline. Fix that so now games are going back and forth correctly between players. Added constant checking for matchmaking. Also fixed leaderboard so it is now sorted and updated format. ~2hrs
 
 
