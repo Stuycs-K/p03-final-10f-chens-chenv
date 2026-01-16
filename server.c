@@ -18,7 +18,7 @@ void insertionsort(struct Player arr[], int n) {
     struct Player temp = arr[i];
     int j = i - 1;
 
-    while (j >= 0 && (arr[j].wins < temp.wins || arr[j].wins == temp.wins && arr[j].losses > temp.losses)) {
+    while (j >= 0 && (arr[j].wins < temp.wins || (arr[j].wins == temp.wins && arr[j].losses > temp.losses))) {
       arr[j + 1] = arr[j];
       j--;
     }
@@ -27,7 +27,8 @@ void insertionsort(struct Player arr[], int n) {
 }
 
 void print_leaderboard() {
-  printf("Leaderboard:\n");
+  printf("_______________________________________\n");
+  //printf("Leaderboard:\n");
   printf("Rank\tUsername\tWins\tLosses\n");
   //printing random players for now but need to sort (prob using merge sort or smth)
   insertionsort(players, num_players);
@@ -36,7 +37,7 @@ void print_leaderboard() {
   for(int i = 0; i < 10; i++) {
     printf("%d\t%s\t\t%d\t%d\n", i + 1, players[i].username, players[i].wins, players[i].losses);
   }
-  printf("_______________________________\n");
+  printf("_______________________________________\n");
 }
 
 void send_board(struct Match* match) {
