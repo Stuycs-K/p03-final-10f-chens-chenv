@@ -27,7 +27,7 @@ void prompt() {
     //   username[strlen(username)-1] = '\0';
     // }
     printf("Where do you want to place your %c, %s?\n", pieceType, username);
-    printf("[enter number from 1-9, numbered clockwise starting from top left]\n");
+    printf("[enter number from 1-9, numbered from left to right, top to bottom]\n");
     if(!fgets(whichSpot,255,stdin)) {
       continue;
     }
@@ -40,10 +40,10 @@ void prompt() {
       printf("Invalid! number should be from 1-9.\n");
       continue;
     }
-    if (board[spot] != ' ') {
-      printf("Invalid! Spot already taken.\n");
-      continue;
-    }
+    // if (board[spot] != ' ') {
+    //   printf("Invalid! Spot already taken.\n");
+    //   continue;
+    // }
 
     break;
   }
@@ -73,7 +73,7 @@ void readinput(char *msg) {
     printtheboard();
     if(pieceType=='X') {
       printf("You go first!\n");
-      prompt();
+      //prompt();
     }
     else {
       printf("Waiting for opponent's move...\n");
@@ -94,7 +94,7 @@ void readinput(char *msg) {
   }
   else if(!strncmp(msg, "BOARD", 5)) {
     char b1,b2,b3,b4,b5,b6,b7,b8,b9;
-    sscanf(msg, "BOARD %c%c%c%c%c%c%c%c%c", &b1,&b2,&b3,&b4,&b5,&b6,&b7,&b8,&b9);
+    sscanf(msg, "BOARD%c%c%c%c%c%c%c%c%c", &b1,&b2,&b3,&b4,&b5,&b6,&b7,&b8,&b9);
     board[1]=b1; board[2]=b2; board[3]=b3;
     board[4]=b4; board[5]=b5; board[6]=b6;
     board[7]=b7; board[8]=b8; board[9]=b9;

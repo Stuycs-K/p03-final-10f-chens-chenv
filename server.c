@@ -27,7 +27,7 @@ void print_leaderboard() {
 
 void send_board(struct Match* match) {
   char board_msg[BUFFER_SIZE];
-  snprintf(board_msg, sizeof(board_msg), "BOARD %c%c%c%c%c%c%c%c%c\n",
+  snprintf(board_msg, sizeof(board_msg), "BOARD%c%c%c%c%c%c%c%c%c\n",
     match->board[1], match->board[2], match->board[3],
     match->board[4], match->board[5], match->board[6],
     match->board[7], match->board[8], match->board[9]);
@@ -294,6 +294,8 @@ int winnerdinner(char board[10], char piece) {
 
 void game_move(int i, int spot) {
 
+  printf("Player with fd %d is attempting to move to spot %d\n", i, spot);
+
   int matidx = find_match(i);
   if(matidx == -1) {
     return;
@@ -326,7 +328,11 @@ void game_move(int i, int spot) {
     return;
   }
 
+  printf("DEBUG: Before move - board[%d]='%c'\n", spot, m->board[spot]); 
+
   m->board[spot] = piece;
+
+  printf("DEBUG: After move - board[%d]='%c'\n", spot, m->board[spot]); 
   send_board(m);
 
   int result = winnerdinner(m->board, piece);
