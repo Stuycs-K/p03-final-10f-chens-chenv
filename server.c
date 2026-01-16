@@ -319,10 +319,17 @@ void game_move(int i, int spot) {
     piece = 'O';
   }
 
+  if(spot < 1 || spot > 9 || m->board[spot] != ' ') {
+    send(i, "INVALID\n", 8, 0);
+    return;
+  }
+
   m->board[spot] = piece;
   send_board(m);
 
-  if(winnerdinner(m->board, piece) == 1) {
+  int result = winnerdinner(m->board, piece);
+
+  if(result == 1) {
     if (player1) {
       end_match(m, 1);
     }
@@ -332,8 +339,7 @@ void game_move(int i, int spot) {
     remove_match(matidx);
     return;
   }
-
-  if (winnerdinner(m->board, piece) == 2) {
+  else if (result == 2) {
     end_match(m, 0);
     remove_match(matidx);
     return;
@@ -415,7 +421,7 @@ int main(int argc, char *argv[] ) {
               if (strncmp(buffer, "MOVE", 4) == 0) {
                 int spot;
                 if (sscanf(buffer + 5, "%d", &spot) == 1) {
-                  printf("Player %s (fd %d) wants to move to spot %d\n", players[index].username, i, spot);
+                  //printf("Player %s (fd %d) wants to move to spot %d\n", players[index].username, i, spot);
                   game_move(i, spot);
                   //matchmake();
                 }
