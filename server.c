@@ -50,7 +50,7 @@ void update_stats(char* username, int win) {
       break;
     }
   }
-}
+} 
 
 int find_player(int fd) {
   for(int i = 0; i < num_players; i++) {
@@ -152,6 +152,7 @@ void add_player(char* username, int fd) {
   if (num_players >= MAX_PLAYERS) {
     printf("Max players reached, cannot add more players.\n");
     send(fd, "SERVER_FULL\n", 12, 0);
+    close(fd);
     return;
   }
  
@@ -220,7 +221,7 @@ void matchmake() {
   send(players[player1].fd, msg1, strlen(msg1), 0);
   send(players[player2].fd, msg2, strlen(msg2), 0);
 
-  send_board(&matches[num_matches - 1]);
+  //send_board(&matches[num_matches - 1]);
 
   send(players[player1].fd, "YOUR_TURN\n", 10, 0);
   //send(players[player2].fd, "NOTTURN\n", 8, 0);
@@ -321,6 +322,7 @@ void game_move(int i, int spot) {
 
   if(spot < 1 || spot > 9 || m->board[spot] != ' ') {
     send(i, "INVALID\n", 8, 0);
+    send(i, "YOUR_TURN\n", 10, 0);
     return;
   }
 
@@ -408,24 +410,43 @@ int main(int argc, char *argv[] ) {
           else {
 
             buffer[k] = '\0';
-            int index = find_player(i);
+            // int index = find_player(i);
 
-            if(index < 0) {
-              //buffer[strlen(buffer) - 1] = '\0';
-              add_player(buffer, i);
-              send(i, "POOL_WAIT\n", 10, 0);
-              matchmake();
-              //break;
-            }
-            else {
-              if (strncmp(buffer, "MOVE", 4) == 0) {
+            // if(index < 0) {
+            //   //buffer[strlen(buffer) - 1] = '\0';
+            //   add_player(buffer, i);
+            //   send(i, "POOL_WAIT\n", 10, 0);
+            //   matchmake();
+            //   //break;
+            // }
+            // else {
+            //   if (strncmp(buffer, "MOVE", 4) == 0) {
+            //     int spot;
+            //     if (sscanf(buffer + 5, "%d", &spot) == 1) {
+            //       //printf("Player %s (fd %d) wants to move to spot %d\n", players[index].username, i, spot);
+            //       game_move(i, spot);
+            //       //matchmake();
+            //     }
+            //   }
+            // }
+
+            char *line = strtok(buffer, "\n");
+            while (line != NULL) {
+              int index = find_player(i);
+
+              if (index < 0) {
+                add_player(line, i);
+                send(i, "POOL_WAIT\n", 10, 0);
+                matchmake();
+              }
+              else if (strncmp(line, "MOVE", 4) == 0) {
                 int spot;
-                if (sscanf(buffer + 5, "%d", &spot) == 1) {
-                  //printf("Player %s (fd %d) wants to move to spot %d\n", players[index].username, i, spot);
+                if (sscanf(line + 5, "%d", &spot) == 1) {
                   game_move(i, spot);
-                  //matchmake();
                 }
               }
+
+              line = strtok(NULL, "\n");
             }
           }
         }

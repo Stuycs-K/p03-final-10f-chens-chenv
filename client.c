@@ -1,7 +1,7 @@
 #include "networking.h"
   char buffer[256];
   char username[256];
-  char board[10]; //space, X, or O.
+  char board[10] = {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}; //space, X, or O.
   char pieceType; //X, or O,
   int server_socket;
 
@@ -80,13 +80,13 @@ void readinput(char *msg) {
     }
   }
   else if(!strncmp(msg, "YOUR_TURN", 9)) {
-    printtheboard();
+    //printtheboard();
     prompt();
   }
   else if(!strncmp(msg, "INVALID", 7)) {
     printf("Invalid! Try again.\n");
     printtheboard();
-    prompt();
+    //prompt();
   }
   else if(!strncmp(msg, "NOTTURN", 7)) {
     printf("Waiting for your turn...\n"); //find a way to tell user to not send smth
@@ -110,7 +110,7 @@ void readinput(char *msg) {
     printtheboard();
   }
   else if(!strncmp(msg, "DRAW", 4)){
-    printf("You drawed, sending back to pool...");
+    printf("You drew, sending back to pool...");
     printtheboard();
   }
   else if(!strncmp(msg, "USERNAME_TAKEN", 14)){
@@ -135,41 +135,33 @@ void clientLogic(int server_socket){
     return;
   }
 
-  if(username[strlen(username)-1]=='\n') {
-    username[strlen(username)-1] = '\0';
-  }
-
-  send(server_socket, username, strlen(username), 0);
-  send(server_socket, "\n", 1, 0);
+  char user[256];
+  snprintf(user, sizeof(user), "%s\n", username);
+  send(server_socket, user, strlen(user), 0);
 
   while(1) {
     int k = recv(server_socket, buffer, sizeof(buffer)-1, 0);
+    printf("Received %d bytes from server, %s\n", k, buffer);
     if(k <= 0) {
       exit(0);
     }
-    // if (buffer[k-1]=='\n') {
-    //   buffer[k-1]='\0';
-    // } else {
-    //   buffer[k]='\0';
-    // }
+
     buffer[k] = '\0';
 
     char *start = buffer;
-    int j = 0;
-
-    while(buffer[j]) {
-      if (buffer[j] == '\n') {
+    for(int j = 0; j < k; j++) {
+      if(buffer[j] == '\n') {
         buffer[j] = '\0';
-        readinput(start);
+        if(start < &buffer[j]) {
+          readinput(start);
+        }
         start = &buffer[j + 1];
       }
-      j++;
     }
-    if (start < &buffer[j]) {
+    if(start < &buffer[k]) {
       readinput(start);
     }
   }
-
 }
 
 int main(int argc, char *argv[] ) {
