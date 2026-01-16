@@ -35,4 +35,7 @@ Continued fixing game_move and matchmake. There was a logic issue in matchmake t
 ### 2026-1-15 - communication error fix, leaderboard sorting
 Went through code to realize that some messages between servers were either not being interpreted or were just disappearing. Turns out it was an error with newline and null characters so the server was reading the input as one string and ignoring everything else, even though everything should be seperated by a newline. Fix that so now games are going back and forth correctly between players. Added constant checking for matchmaking. Also fixed leaderboard so it is now sorted and updated format. ~2hrs
 
+### 2026-1-16 - final testing, filming video
+Filmed video with Vincent. Did some final testing and updated readme. ~1hr
+
 

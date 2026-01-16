@@ -23,7 +23,7 @@ Multiple clients can connect to a central server over TCP sockets, enter a match
 
 The user compiles/runs this program by running make server in one terminal window, and running make client a positive number x of times, where x is greater than 2. From there, a subset will be matched into games with one another, where they'll be playing until one side wins or there is a draw.
 
-The user interacts with this program by typing in a number from 1-9 inclusive to place a piece on the board. A player wins once they earn "three-in-a-row" before their opponent, at which point the game will end.
+The user interacts with this program by typing in a number from 1-9 inclusive to place a piece on the board. A player wins once they earn "three-in-a-row" before their opponent, at which point the game will end. After their game ends, they will be sent back into the pool of players, waiting for their next match and opponent. The user can use ctrl-c to exit the program. 
 
 ### Resources/ References:
 
