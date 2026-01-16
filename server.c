@@ -294,7 +294,7 @@ int winnerdinner(char board[10], char piece) {
 
 void game_move(int i, int spot) {
 
-  printf("Player with fd %d is attempting to move to spot %d\n", i, spot);
+  //printf("Player with fd %d is attempting to move to spot %d\n", i, spot);
 
   int matidx = find_match(i);
   if(matidx == -1) {
@@ -383,7 +383,19 @@ int main(int argc, char *argv[] ) {
   while(1) {
 
     read_fds2 = read_fds1;
-    select(max + 1, &read_fds2, NULL, NULL, NULL);
+
+    struct timeval timeout;
+    // timeout.tv_sec = 5;
+    timeout.tv_usec = 200000;
+    int a = select(max + 1, &read_fds2, NULL, NULL, &timeout);
+
+    if(a < 0) {
+      continue;
+    }
+    else if(a == 0) {
+      matchmake();
+      continue;
+    }
 
     for (int i = 0; i <= max; i++) {
       if (FD_ISSET(i, &read_fds2)) {
@@ -457,6 +469,7 @@ int main(int argc, char *argv[] ) {
         }
       }
     }
+    matchmake();
   }
   return 0;
 }

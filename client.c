@@ -70,7 +70,7 @@ void readinput(char *msg) {
     for (int i = 1; i <= 9; i++) {
       board[i] = ' ';
     }
-    printtheboard();
+    //printtheboard();
     if(pieceType=='X') {
       printf("You go first!\n");
       //prompt();
