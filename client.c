@@ -135,7 +135,7 @@ void clientLogic(int server_socket){
     return;
   }
 
-  char user[256];
+  char user[256+1];
   snprintf(user, sizeof(user), "%s\n", username);
   send(server_socket, user, strlen(user), 0);
 

@@ -65,7 +65,7 @@ void update_stats(char* username, int win) {
       break;
     }
   }
-} 
+}
 
 int find_player(int fd) {
   for(int i = 0; i < num_players; i++) {
@@ -133,7 +133,7 @@ void remove_player(int fd) {
       if (other_idx != -1) {
         players[other_idx].searching = 1;
       }
-      
+
       remove_match(match_idx);
     }
   }
@@ -170,7 +170,7 @@ void add_player(char* username, int fd) {
     close(fd);
     return;
   }
- 
+
   struct Player new_player;
   strncpy(new_player.username, username, sizeof(new_player.username) - 1);
   new_player.username[sizeof(new_player.username) - 1] = '\0';
@@ -185,7 +185,7 @@ void add_player(char* username, int fd) {
   send(fd, "THANKS\n", 7, 0);
   printf("%s has joined.\n", username);
   print_leaderboard();
-  
+
 }
 
 void matchmake() {
@@ -230,8 +230,8 @@ void matchmake() {
 
   char msg1[BUFFER_SIZE];
   char msg2[BUFFER_SIZE];
-  snprintf(msg1, sizeof(msg1), "MATCH %s X\n", players[player2].username);
-  snprintf(msg2, sizeof(msg2), "MATCH %s O\n", players[player1].username);
+  snprintf(msg1, sizeof(msg1), "MATCH %s X\n", players[player2].username) < 0 ? abort() : (void)0;
+  snprintf(msg2, sizeof(msg2), "MATCH %s O\n", players[player1].username) < 0 ? abort() : (void)0;
 
   send(players[player1].fd, msg1, strlen(msg1), 0);
   send(players[player2].fd, msg2, strlen(msg2), 0);
@@ -343,11 +343,11 @@ void game_move(int i, int spot) {
     return;
   }
 
-  //printf("DEBUG: Before move - board[%d]='%c'\n", spot, m->board[spot]); 
+  //printf("DEBUG: Before move - board[%d]='%c'\n", spot, m->board[spot]);
 
   m->board[spot] = piece;
 
-  //printf("DEBUG: After move - board[%d]='%c'\n", spot, m->board[spot]); 
+  //printf("DEBUG: After move - board[%d]='%c'\n", spot, m->board[spot]);
   send_board(m);
 
   int result = winnerdinner(m->board, piece);
@@ -464,7 +464,7 @@ int main(int argc, char *argv[] ) {
 
               start = new + 1;
             }
-            
+
             if(*start != '\0') {
               int index = find_player(i);
 
