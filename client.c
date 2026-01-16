@@ -23,9 +23,9 @@ void prompt() {
   char whichSpot[256];
   int spot;
   while(1) {
-    // if(username[strlen(username)-1]=='\n') {
-    //   username[strlen(username)-1] = '\0';
-    // }
+    if(username[strlen(username)-1]=='\n') {
+      username[strlen(username)-1] = '\0';
+    }
     printf("Where do you want to place your %c, %s?\n", pieceType, username);
     printf("[enter number from 1-9, numbered from left to right, top to bottom]\n");
     if(!fgets(whichSpot,255,stdin)) {
@@ -106,11 +106,11 @@ void readinput(char *msg) {
     printtheboard();
   }
   else if(!strncmp(msg, "LOSE", 4)){
-    printf("You lost, sending back to pool...");
+    printf("You lost, sending back to pool...\n");
     printtheboard();
   }
   else if(!strncmp(msg, "DRAW", 4)){
-    printf("You drew, sending back to pool...");
+    printf("You drew, sending back to pool...\n");
     printtheboard();
   }
   else if(!strncmp(msg, "USERNAME_TAKEN", 14)){
@@ -141,7 +141,7 @@ void clientLogic(int server_socket){
 
   while(1) {
     int k = recv(server_socket, buffer, sizeof(buffer)-1, 0);
-    printf("Received %d bytes from server, %s\n", k, buffer);
+    //printf("Received %d bytes from server, %s\n", k, buffer);
     if(k <= 0) {
       exit(0);
     }
